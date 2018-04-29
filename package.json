@@ -17,8 +17,18 @@
   },
   "homepage": "https://github.com/fabim83/urlaubsverwaltung#readme",
   "dependencies": {
+    "bcryptjs": "*",
+    "body-parser": "*",
+    "connect-flash": "*",
+    "cookie-parser": "^1.4.1",
     "express": "^4.16.3",
-    "joi": "^13.2.0",
-    "mysql": "^2.15.0"
+    "express-handlebars": "*",
+    "express-messages": "*",
+    "express-session": "*",
+    "express-validator": "*",
+    "mysql": "^2.15.0",
+    "passport": "*",
+    "passport-http": "*",
+    "passport-local": "*"
   }
 }
