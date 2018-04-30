@@ -1,1 +1,12 @@
-LOGIN
+<h2 class="page-header">Login</h2>
+<form method="POST" action="/users/login">
+    <div class="form-group">
+        <label>Kennung</label>
+        <input type="text" class="form-control" name="username" placeholder="Kennung">
+    </div>
+    <div class="form-group">
+        <label>Passwort</label>
+        <input type="password" class="form-control" name="password" placeholder="Passwort">
+    </div>
+    <button type="submit" class="btn btn-default">Login</button>
+</form>

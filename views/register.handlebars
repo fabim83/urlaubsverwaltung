@@ -1,0 +1,41 @@
+<h2 class="page-header">Registrieren</h2>
+{{#if errors}} 
+    {{#each errors}}
+        <div class="alert alert-danger">{{msg}}</div>
+    {{/each}} 
+{{/if}}
+<form method="POST" action="/users/register">
+    <div class="form-group">
+        <label>Personalnummer</label>
+        <input type="text" class="form-control" placeholder="Personalnummer" name="personalnummer">
+    </div>
+    <div class="form-group">
+        <label>Anrede</label>
+        <select class="form-control" name="anrede">
+            <option value="" selected="selected">Bitte auswählen</option>
+            <option value="m">Herr</option>
+            <option value="w">Frau</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Vorname</label>
+        <input type="text" class="form-control" placeholder="Vorname" name="vorname">
+    </div>
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" class="form-control" placeholder="Name" name="name">
+    </div>
+    <div class="form-group">
+        <label>E-Mail</label>
+        <input type="email" class="form-control" placeholder="E-Mail" name="email">
+    </div>
+    <div class="form-group">
+        <label>Passwort</label>
+        <input type="password" class="form-control" placeholder="Passwort" name="passwort">
+    </div>
+    <div class="form-group">
+        <label>Passwort bestätigen</label>
+        <input type="password" class="form-control" placeholder="Passwort" name="passwort2">
+    </div>
+    <button type="submit" class="btn btn-default">Registrieren</button>
+</form>
