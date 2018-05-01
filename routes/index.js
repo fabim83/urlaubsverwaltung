@@ -3,7 +3,12 @@ const router = express.Router();
 
 // Get Homepage
 router.get('/', isMitarbeitAuthentifiziert, function (req, res) {
-    res.render('index');
+    var anrede = req.user[0].geschlecht  == 'w' ? 'Frau' : 'Herr';
+    res.render('index', {
+        anrede: anrede,
+        name: req.user[0].name,
+        personalnummer: req.user[0].personalnummer
+    });
 });
 
 function isMitarbeitAuthentifiziert(req, res, next) {

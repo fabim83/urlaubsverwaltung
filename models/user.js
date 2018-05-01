@@ -17,7 +17,6 @@ module.exports.createMitarbeiter = function (mitarbeiter, callback) {
 
     // DB-Insert
     db.connect((err) => {
-        if (err) console.log('Verbindung zur Datenbank fehlgeschlagen.');
         var sql = "INSERT INTO UV_MITARBEITER VALUES (?,?,?,?,?,?,null,30)";
         var values = [mitarbeiter.personalnummer, mitarbeiter.name, mitarbeiter.vorname, mitarbeiter.anrede, mitarbeiter.email, mitarbeiter.passwort];
         db.query(sql, values, callback);
@@ -26,7 +25,6 @@ module.exports.createMitarbeiter = function (mitarbeiter, callback) {
 
 module.exports.getMitarbeiterByPersonalnummer = function (personalnummer, callback){
     db.connect((err) => {
-        if (err) console.log('Verbindung zur Datenbank fehlgeschlagen.');
         var sql = "SELECT * FROM UV_MITARBEITER WHERE PERSONALNUMMER = ?";
         var values = [personalnummer];
         db.query(sql, values, callback);

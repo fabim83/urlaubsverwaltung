@@ -1,2 +1,73 @@
-<h2 class="page-header">Dashboard</h2>
-<p>Herzlich Willkommen in der Urlaubsverwaltung</p>
+<h2 class="page-header">Herzlich Willkommen, {{anrede}} {{name}}.</h2>
+<div id="tabs">
+  <ul>
+    <li><a href="#tab-uebersicht">Übersicht</a></li>
+    <li><a href="#tab-meldung">Meldung</a></li>
+    <li><a href="#tab-historie">Historie</a></li>
+  </ul>
+  <div id="tab-uebersicht">
+      <script>ladeUebersicht({{personalnummer}})</script>
+  </div>
+  <div id="tab-meldung">
+    <form method="POST" action="/meldungen/neue-meldung">
+        <div class="form-group">
+            <fieldset>
+                <legend>Meldungsart: </legend>
+                <label for="urlaub">Urlaub</label>
+                <input type="radio" name="meldungsart" id="urlaub">
+                <label for="krankheit">Krankheit</label>
+                <input type="radio" name="meldungsart" id="krankheit">
+                <label for="sonderurlaub">Sonderurlaub</label>
+                <input type="radio" name="meldungsart" id="sonderurlaub">
+            </fieldset>
+        </div>
+        <div class="form-group">
+            <label>Anrede</label>
+            <select class="form-control" name="anrede">
+                <option value="" selected="selected">Bitte auswählen</option>
+                <option value="m">Herr</option>
+                <option value="w">Frau</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Vorname</label>
+            <input type="text" class="form-control" placeholder="Vorname" name="vorname">
+        </div>
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" class="form-control" placeholder="Name" name="name">
+        </div>
+        <div class="form-group">
+            <label>E-Mail</label>
+            <input type="email" class="form-control" placeholder="E-Mail" name="email">
+        </div>
+        <div class="form-group">
+            <label>Passwort</label>
+            <input type="password" class="form-control" placeholder="Passwort" name="passwort">
+        </div>
+        <div class="form-group">
+            <label>Passwort bestätigen</label>
+            <input type="password" class="form-control" placeholder="Passwort" name="passwort2">
+        </div>
+        <button type="submit" class="btn btn-default">Abschicken</button>
+    </form>
+  </div>
+  <div id="tab-historie"> 
+      <script>ladeHistorie('Test')</script> 
+  </div>
+</div>
+
+<script>
+    $( function() {
+      $( "#tabs" ).tabs({
+        event: "mouseover"
+      });
+    });
+</script>
+<script>
+     $( function() {
+         $( "input" ).checkboxradio({
+            icon: false
+        });
+    } );
+</script>

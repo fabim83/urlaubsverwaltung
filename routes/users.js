@@ -62,8 +62,8 @@ passport.use(new LocalStrategy(
     function(personalnummer, passwort, done) {
         User.getMitarbeiterByPersonalnummer(personalnummer, (err, mitarbeiter) => {
             if(err) throw err;
-            if(!mitarbeiter){
-                return done(null, false, {message: LOGIN_FEHLER_MESSAGE})
+            if(!mitarbeiter[0]){
+                return done(null, false, {message: LOGIN_FEHLER_MESSAGE});
             }
 
             User.comparePasswort(passwort, mitarbeiter[0].passwort, (err, isMatch) => {
@@ -71,7 +71,7 @@ passport.use(new LocalStrategy(
                 if(isMatch){
                     return done(null, mitarbeiter);
                 }else{
-                    return done(null, false, {message: LOGIN_FEHLER_MESSAGE})
+                    return done(null, false, {message: LOGIN_FEHLER_MESSAGE});
                 }
             })
         });

@@ -18,6 +18,7 @@ const db = mysql.createConnection({
 
 const routes = require('./routes/index');
 const users = require('./routes/users');
+const meldungen = require('./routes/meldungen');
 
 // Initialisieren der Applikation
 const app = express();
@@ -78,6 +79,7 @@ app.use(function (req, res, next) {
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/meldungen', meldungen);
 
 // Port setzten
 app.set('port', (process.env.PORT || 3000));
