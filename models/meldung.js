@@ -28,7 +28,15 @@ module.exports.getMeldungenZuMitarbeiter = function (personalnummer, callback){
         var values = [personalnummer];
         db.query(sql, values, callback);
     });
-}
+};
+
+module.exports.getMeldungenByStatus = function (status, callback){
+    db.connect((err) => {
+        var sql = "SELECT * from UV_MELDUNG WHERE MELDUNGSSTATUS = ?";
+        var values = [status];
+        db.query(sql, values, callback);
+    });
+};
 
 
 
