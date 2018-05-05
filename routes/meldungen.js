@@ -33,6 +33,17 @@ router.post('/erfassen', isMitarbeitAuthentifiziert, function (req, res) {
     }
 });
 
+router.post('/uebersicht', isMitarbeitAuthentifiziert, function(req, res){
+    Meldung.getMeldungenZuMitarbeiter(req.user[0].personalnummer, (err, result) => {
+        if (err) {
+            req.flash('error_msg', err.message);
+            res.redirect('/');
+        } else {
+            res.send(result);
+        }
+    });
+});
+
 function isMitarbeitAuthentifiziert(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
