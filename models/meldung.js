@@ -8,9 +8,23 @@ const db = mysql.createConnection({
 
 module.exports.createMeldung = function (meldung, callback) {
     db.connect((err) => {
-        var sql = "INSERT INTO UV_MELDUNG VALUES (?,?,'Offen',?,?,?)";
-        var values = [meldung.personalnummer, meldung.meldungsart, meldung.vom_dat, meldung.bis_dat, meldung.halber_tag];
-        db.query(sql, values, callback);
+        var sql = "SELECT * from UV_MELDUNGSART WHERE MELDUNGSART = ?";
+        var values = [meldung.meldungsart];
+        db.query(sql, values, (err, result) => {
+            if(err){
+                throw err;
+                //callback(err, null);
+            } else {
+                meldung.meldungsart = result[0].meldungsart_nr;
+                console.log(meldung);
+
+                sql = "INSERT INTO UV_MELDUNG VALUES (?,?,'Offen',?,?,?)";
+                values = [meldung.personalnummer, meldung.meldungsart, meldung.vom_dat, meldung.bis_dat, meldung.halber_tag];
+                db.query(sql, values, callback);
+            }
+        });
     });
 };
+
+
 

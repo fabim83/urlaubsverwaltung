@@ -7,7 +7,8 @@ router.get('/', isMitarbeitAuthentifiziert, function (req, res) {
     res.render('index', {
         anrede: anrede,
         name: req.user[0].name,
-        personalnummer: req.user[0].personalnummer
+        personalnummer: req.user[0].personalnummer,
+        verwalter: req.user[0].kz_verwalter
     });
 });
 
