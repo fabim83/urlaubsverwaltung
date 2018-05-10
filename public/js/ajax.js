@@ -116,6 +116,34 @@ function rendereContentOffeneMeldungen(meldung, link, panel_body) {
     input_meldungsnr.setAttribute("value", meldung.meldung_nr);
     form.appendChild(input_meldungsnr);
 
+    // Input-Feld E-Mail
+    var input_email = document.createElement("input");
+    input_email.setAttribute("type", "hidden");
+    input_email.setAttribute("name", "email");
+    input_email.setAttribute("value", mitarbeiter[0].email);
+    form.appendChild(input_email);
+
+    // Input-Feld Name
+    var input_name = document.createElement("input");
+    input_name.setAttribute("type", "hidden");
+    input_name.setAttribute("name", "name");
+    input_name.setAttribute("value", mitarbeiter[0].name);
+    form.appendChild(input_name);
+
+    // Input-Feld Meldungsart
+    var input_meldungsart = document.createElement("input");
+    input_meldungsart.setAttribute("type", "hidden");
+    input_meldungsart.setAttribute("name", "meldungsart");
+    input_meldungsart.setAttribute("value", meldung.meldungsart);
+    form.appendChild(input_meldungsart);
+
+    // Input-Feld Anrede
+    var input_anrede = document.createElement("input");
+    input_anrede.setAttribute("type", "hidden");
+    input_anrede.setAttribute("name", "anrede");
+    input_anrede.setAttribute("value", mitarbeiter[0].anrede);
+    form.appendChild(input_anrede);
+
     // Tabelle
     var div_row = document.createElement("div");
     div_row.setAttribute("class", "row");
