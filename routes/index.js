@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 // Get Homepage
-router.get('/', isMitarbeitAuthentifiziert, function (req, res) {
+router.get('/', isMitarbeiterAuthentifiziert, function (req, res) {
     var anrede = req.user[0].geschlecht  == 'w' ? 'Frau' : 'Herr';
     res.render('index', {
         anrede: anrede,
@@ -12,7 +12,7 @@ router.get('/', isMitarbeitAuthentifiziert, function (req, res) {
     });
 });
 
-function isMitarbeitAuthentifiziert(req, res, next) {
+function isMitarbeiterAuthentifiziert(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     } else {

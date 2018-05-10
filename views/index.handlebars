@@ -14,7 +14,7 @@
     </li>
     {{#if verwalter}}
     <li>
-        <a data-toggle="tab" href="#offene-meldungen">Offene Meldungen
+        <a id="link-offene-meldungen" data-toggle="tab" href="#offene-meldungen">Offene Meldungen
             <span class="badge" id="anz-offene-meldungen"><script>setAnzahlOffeneMeldungen();</script></span>
         </a>
     </li>
@@ -82,9 +82,9 @@
     </div>
     {{#if verwalter}}
     <div id="offene-meldungen" class="tab-pane fade">
-        <div class="panel-group" id="accordion">
-            <script>getOffeneMeldungen();</script>
+        <div class="panel-group" id="accordion-offene-meldungen">
         </div>
+        <script>getOffeneMeldungen();</script>
     </div>
     <div id="uebersicht-mitarbeiter" class="tab-pane fade">
         <h3>Menu 2</h3>
@@ -109,9 +109,3 @@
         }
     });
 </script>
-
-<style>
-    .tab-pane {
-        margin-bottom: 20px
-    }
-</style>

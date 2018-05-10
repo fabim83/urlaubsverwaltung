@@ -101,6 +101,33 @@ router.get('/logout', (req, res) =>{
     req.logout();
     req.flash('success_msg', 'Sie haben sich erfolgreich ausgeloggt.');
     res.redirect('/users/login');
-})
+});
+
+router.get('/mitarbeiter', isMitarbeiterAuthentifiziert, isVerwalter, (req, res) => {
+    User.getMitarbeiterByPersonalnummer(req.query.personalnummer, (err, result) => {
+        if (err) {
+            req.flash('error_msg', err.message);
+            res.redirect('/');
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+function isMitarbeiterAuthentifiziert(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    } else {
+        res.redirect('/users/login');
+    }
+};
+
+function isVerwalter(req, res, next) {
+    if(req.user[0].kz_verwalter == 1){
+        return next();
+    } else {
+        res.redirect('/users/login');
+    }
+};
 
 module.exports = router;

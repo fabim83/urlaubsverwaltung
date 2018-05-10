@@ -27,6 +27,7 @@
     "express-session": "*",
     "express-validator": "*",
     "mysql": "^2.15.0",
+    "nodemailer": "^4.6.4",
     "passport": "*",
     "passport-http": "*",
     "passport-local": "*"

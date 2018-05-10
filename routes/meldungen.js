@@ -3,7 +3,7 @@ const router = express.Router();
 const Meldung = require('../models/meldung');
 
 // Get Homepage
-router.post('/erfassen', isMitarbeitAuthentifiziert, function (req, res) {
+router.post('/erfassen', isMitarbeiterAuthentifiziert, function (req, res) {
     req.checkBody('von_datum', 'Der Zeitraum muss angegeben werden.').notEmpty();
     req.checkBody('bis_datum', 'Der Zeitraum muss angegeben werden.').notEmpty();
 
@@ -33,7 +33,7 @@ router.post('/erfassen', isMitarbeitAuthentifiziert, function (req, res) {
     }
 });
 
-router.post('/uebersicht', isMitarbeitAuthentifiziert, function(req, res){
+router.post('/uebersicht', isMitarbeiterAuthentifiziert, function(req, res){
     Meldung.getMeldungenZuMitarbeiter(req.user[0].personalnummer, (err, result) => {
         if (err) {
             req.flash('error_msg', err.message);
@@ -44,7 +44,7 @@ router.post('/uebersicht', isMitarbeitAuthentifiziert, function(req, res){
     });
 });
 
-router.get('/status', isMitarbeitAuthentifiziert, function(req, res){
+router.get('/status', isMitarbeiterAuthentifiziert, isVerwalter, function(req, res){
     Meldung.getMeldungenByStatus(req.query.status, (err, result) => {
         if (err) {
             req.flash('error_msg', err.message);
@@ -55,9 +55,30 @@ router.get('/status', isMitarbeitAuthentifiziert, function(req, res){
     });
 });
 
+router.post('/status-aktualisieren', isMitarbeiterAuthentifiziert, isVerwalter, function(req, res){
+    var status_neu = req.body.entscheidung == 'Genehmigen' ? 'Genehmigt' : 'Abgelehnt';
+    Meldung.setStatusMeldung(req.body.meldung_nr, status_neu, (err, result) => {
+        if(err){
+            req.flash('error_msg', err.message);
+            res.redirect('/');
+        }else{
+            req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
+            res.redirect('/');
+        }
+    });
+});
 
-function isMitarbeitAuthentifiziert(req, res, next) {
+
+function isMitarbeiterAuthentifiziert(req, res, next) {
     if (req.isAuthenticated()) {
+        return next();
+    } else {
+        res.redirect('/users/login');
+    }
+};
+
+function isVerwalter(req, res, next) {
+    if(req.user[0].kz_verwalter == 1){
         return next();
     } else {
         res.redirect('/users/login');
