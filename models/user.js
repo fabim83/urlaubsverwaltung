@@ -11,15 +11,13 @@ module.exports.createMitarbeiter = function (mitarbeiter, callback) {
     // Passwort hashen
     bcrypt.genSalt(10, function(err, salt) {
         bcrypt.hash(mitarbeiter.passwort, salt, function(err, hash) {
-            mitarbeiter.passwort = hash;
+            // DB-Insert
+            db.connect((err) => {
+                var sql = "INSERT INTO UV_MITARBEITER VALUES (?,?,?,?,?,?,?,0,30)";
+                var values = [mitarbeiter.personalnummer, mitarbeiter.name, mitarbeiter.vorname, mitarbeiter.anrede, mitarbeiter.abteilung, mitarbeiter.email, hash];
+                db.query(sql, values, callback);
+            });
         });
-    });
-
-    // DB-Insert
-    db.connect((err) => {
-        var sql = "INSERT INTO UV_MITARBEITER VALUES (?,?,?,?,?,?,null,30)";
-        var values = [mitarbeiter.personalnummer, mitarbeiter.name, mitarbeiter.vorname, mitarbeiter.anrede, mitarbeiter.email, mitarbeiter.passwort];
-        db.query(sql, values, callback);
     });
 };
 

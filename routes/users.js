@@ -19,6 +19,7 @@ router.get('/register', function (req, res) {
 router.post('/register', function (req, res) {
     req.checkBody('personalnummer', 'Personalnummer muss dem Schema PN00000 entsprechen.').matches('^[P][N][0-9][0-9][0-9][0-9][0-9]$');
     req.checkBody('anrede', 'Anrede muss ausgewählt sein.').notEmpty();
+    req.checkBody('abteilung', 'Abteilung muss ausgewählt sein.').notEmpty();
     req.checkBody('vorname', 'Vorname muss gefüllt sein.').notEmpty();
     req.checkBody('vorname', 'Vorname darf nicht länger als 30 Zeichen sein.').len({ max: 30 });
     req.checkBody('name', 'Name muss gefüllt sein.').notEmpty();
@@ -38,6 +39,7 @@ router.post('/register', function (req, res) {
             name: req.body.name,
             vorname: req.body.vorname,
             anrede: req.body.anrede,
+            abteilung: req.body.abteilung,
             email: req.body.email,
             passwort: req.body.passwort
         };
