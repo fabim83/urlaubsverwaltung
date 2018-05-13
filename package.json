@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/fabim83/urlaubsverwaltung.git"
   },
-  "author": "Fabian Metten, Niko Müller",
+  "author": "Fabian M., Niko M.",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/fabim83/urlaubsverwaltung/issues"
@@ -26,6 +26,7 @@
     "express-messages": "*",
     "express-session": "*",
     "express-validator": "*",
+    "fullcalendar": "^3.9.0",
     "mysql": "^2.15.0",
     "nodemailer": "^4.6.4",
     "passport": "*",
