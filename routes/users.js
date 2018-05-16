@@ -116,6 +116,17 @@ router.get('/mitarbeiter', isMitarbeiterAuthentifiziert, isVerwalter, (req, res)
     });
 });
 
+router.get('/abteilungen', isMitarbeiterAuthentifiziert, isVerwalter, (req, res) => {
+    User.getAbteilungen((err, result) => {
+        if (err) {
+            req.flash('error_msg', err.message);
+            res.redirect('/');
+        } else {
+            res.send(result);
+        }
+    });
+});
+
 function isMitarbeiterAuthentifiziert(req, res, next) {
     if (req.isAuthenticated()) {
         return next();

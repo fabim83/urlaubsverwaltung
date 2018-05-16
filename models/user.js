@@ -3,7 +3,8 @@ const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "urlaubsverwaltung_ws2015_webprogrammierung"
+    database: "urlaubsverwaltung_ws2015_webprogrammierung",
+    dateStrings: true
 });
 const bcrypt = require('bcryptjs');
 
@@ -26,6 +27,13 @@ module.exports.getMitarbeiterByPersonalnummer = function (personalnummer, callba
         var sql = "SELECT * FROM UV_MITARBEITER WHERE PERSONALNUMMER = ?";
         var values = [personalnummer];
         db.query(sql, values, callback);
+    });
+};
+
+module.exports.getAbteilungen = function (callback){
+    db.connect((err) => {
+        var sql = "SELECT * FROM UV_ABTEILUNG;";
+        db.query(sql, callback);
     });
 };
 

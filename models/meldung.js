@@ -3,7 +3,8 @@ const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "urlaubsverwaltung_ws2015_webprogrammierung"
+    database: "urlaubsverwaltung_ws2015_webprogrammierung",
+    dateStrings: true
 });
 
 module.exports.createMeldung = function (meldung, callback) {
@@ -32,7 +33,7 @@ module.exports.getMeldungenZuMitarbeiter = function (personalnummer, callback) {
 
 module.exports.getMeldungenByStatus = function (status, callback) {
     db.connect((err) => {
-        var sql = "SELECT * from UV_MELDUNG WHERE MELDUNGSSTATUS = ?";
+        var sql = "SELECT * from UV_MELDUNG x JOIN UV_MITARBEITER y ON x.PERSONALNUMMER = y.PERSONALNUMMER WHERE MELDUNGSSTATUS = ?";
         var values = [status];
         db.query(sql, values, (err, result) => {
             if (err) {
@@ -56,6 +57,27 @@ module.exports.setStatusMeldung = function (meldung_nr, status_neu, callback){
         var sql = "UPDATE UV_MELDUNG SET MELDUNGSSTATUS = ? WHERE MELDUNG_NR = ?";
         var values = [status_neu, meldung_nr];
         db.query(sql, values, callback);
+    });
+};
+
+module.exports.getMeldungenByAbteilung = function (abteilung, callback) {
+    db.connect((err) => {
+        var sql = "SELECT * from UV_MELDUNG x JOIN UV_MITARBEITER y ON x.PERSONALNUMMER = y.PERSONALNUMMER WHERE x.MELDUNGSSTATUS = 'Genehmigt' and y.Abteilung = ?";
+        var values = [abteilung];
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                callback(err, null);
+            } else {
+                sql = "SELECT * FROM UV_MELDUNGSART";
+                db.query(sql, (err, meldungsarten) => {
+                    if (err) {
+                        callback(err, null);
+                    } else {
+                        callback(null, meldungenMitMeldungsartAlsKlartext(result, meldungsarten));
+                    }
+                });
+            }
+        });
     });
 };
 

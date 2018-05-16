@@ -15,7 +15,8 @@
     {{#if verwalter}}
     <li>
         <a id="link-offene-meldungen" data-toggle="tab" href="#offene-meldungen">Offene Meldungen
-            <span class="badge" id="anz-offene-meldungen"><script>setAnzahlOffeneMeldungen();</script></span>
+            <span class="badge" id="anz-offene-meldungen">
+            </span>
         </a>
     </li>
     <li>
@@ -25,7 +26,7 @@
 </ul>
 
 <div class="tab-content">
-    <div id="uebersicht" class="tab-pane fade in active">
+    <div id="uebersicht" class="tab-pane fade in active" style="margin-top: 20px">
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h3 class="panel-title">Urlaub</h3>
@@ -47,9 +48,8 @@
             <div class="panel-body" id="panel-body-sonderurlaub">
             </div>
         </div>
-        <script>getUebersicht()</script>
     </div>
-    <div id="meldung" class="tab-pane fade">
+    <div id="meldung" class="tab-pane fade" style="margin-top: 20px">
         <form method="POST" action="/meldungen/erfassen">
             <div class="form-group">
                 <select class="form-control" name="meldungsart">
@@ -76,36 +76,22 @@
             <button type="submit" class="btn btn-default">Abschicken</button>
         </form>
     </div>
-    <div id="historie" class="tab-pane fade">
+    <div id="historie" class="tab-pane fade" style="margin-top: 20px">
         <h3>Menu 2</h3>
         <p>Some content in menu 2.</p>
     </div>
     {{#if verwalter}}
-    <div id="offene-meldungen" class="tab-pane fade">
+    <div id="offene-meldungen" class="tab-pane fade" style="margin-top: 20px">
         <div class="panel-group" id="accordion-offene-meldungen">
         </div>
-        <script>getOffeneMeldungen();</script>
     </div>
-    <div id="uebersicht-mitarbeiter" class="tab-pane fade">
-        <h3>Menu 2</h3>
-        <p>Some content in menu 2.</p>
+    <div id="uebersicht-mitarbeiter" class="tab-pane fade" style="margin-top: 20px">
+        <div class="form-group">
+            <select class="form-control" id="abteilung-uebersicht">
+                <option value="" selected="selected">Bitte auswählen</option>
+            </select>
+        </div>
+        <div id="calendar-uebersicht-mitarbeiter"></div>
     </div>
     {{/if}}
 </div>
-
-<script>
-    $('#von_datum').on('change', function () {
-        if ($('#von_datum').val() == $('#bis_datum').val()) {
-            $('#divHalberTag').show();
-        } else {
-            $('#divHalberTag').hide()
-        }
-    });
-    $('#bis_datum').on('change', function () {
-        if ($('#von_datum').val() == $('#bis_datum').val()) {
-            $('#divHalberTag').show();
-        } else {
-            $('#divHalberTag').hide()
-        }
-    });
-</script>

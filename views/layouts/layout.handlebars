@@ -5,9 +5,62 @@
     <title>Urlaubsverwaltung</title>
     <link rel="stylesheet" href="/css/bootstrap.css" />
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fullcalendar.css" />
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="/js/fullcalendar/moment.min.js"></script>
+    <script src="/js/fullcalendar/fullcalendar.js"></script>
+    <script src="/js/fullcalendar/de.js"></script>
     <script src="/js/bootstrap.js"></script>
     <script src="/js/ajax.js"></script>
+    <script>
+      $(function(){
+        $('#calendar-uebersicht-mitarbeiter').fullCalendar({
+          locale: 'de',
+          themeSystem: 'bootstrap3',
+          header: {
+            left: 'title',
+            center: '',
+            right: 'prev,next'
+          }
+        }).on('click', '.fc-prev-button,.fc-next-button', function(){
+          var abteilung = $('#abteilung-uebersicht').val();
+
+          if(abteilung){
+            getKalendereintraegeZuAbteilung(abteilung);
+          }
+        });
+
+        $('#von_datum').on('change', function () {
+            if ($('#von_datum').val() == $('#bis_datum').val()) {
+                $('#divHalberTag').show();
+            } else {
+                $('#divHalberTag').hide()
+            }
+        });
+
+        $('#bis_datum').on('change', function () {
+            if ($('#von_datum').val() == $('#bis_datum').val()) {
+                $('#divHalberTag').show();
+            } else {
+                $('#divHalberTag').hide()
+            }
+        });
+
+        $('#abteilung-uebersicht').on('change', function(){
+          $('#calendar-uebersicht-mitarbeiter').fullCalendar('removeEvents');
+          var abteilung = $('#abteilung-uebersicht').val();
+
+          if(abteilung){
+            getKalendereintraegeZuAbteilung(abteilung);
+          }
+        });
+
+        setAnzahlOffeneMeldungen();
+        getUebersicht();
+        getOffeneMeldungen();
+        getAbteilungen();
+      });
+    </script>
 </head>
 <body>
     <div class="container">

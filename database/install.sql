@@ -112,6 +112,7 @@ foreign key (personalnummer) references uv_mitarbeiter (personalnummer) on delet
 LOCK TABLES uv_meldung WRITE;
 /*!40000 ALTER TABLE uv_meldung DISABLE KEYS */;
 INSERT INTO uv_meldung (personalnummer, meldungsart, meldungsstatus, vom_dat, bis_dat, halber_tag) VALUES ('PN00002', 1, 'Offen', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY), '');
+INSERT INTO uv_meldung (personalnummer, meldungsart, meldungsstatus, vom_dat, bis_dat, halber_tag) VALUES ('PN00001', 1, 'Genehmigt', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY), '');
 /*!40000 ALTER TABLE uv_meldung ENABLE KEYS */;
 UNLOCK TABLES;
 

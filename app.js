@@ -13,7 +13,8 @@ const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "urlaubsverwaltung_ws2015_webprogrammierung"
+    database: "urlaubsverwaltung_ws2015_webprogrammierung",
+    dateStrings: true
 });
 
 const routes = require('./routes/index');

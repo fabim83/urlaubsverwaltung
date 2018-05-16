@@ -1,3 +1,4 @@
+// AJAX-Calls
 function getUebersicht() {
     $.ajax({
         type: 'POST',
@@ -43,16 +44,35 @@ function getOffeneMeldungen() {
         });
 };
 
-function getMitarbeiterByPersonalnummer(personalnummer) {
-    var response = $.ajax({
+function getAbteilungen() {
+    $.ajax({
         type: 'GET',
-        url: '/users/mitarbeiter?personalnummer=' + personalnummer,
-        async: false
-    }).responseText;
+        url: '/users/abteilungen',
+        dataType: 'json'
+    })
+        .done(function (data) {
+            rendereAbteilungen(data);
+        })
+        .fail(function (jqXHR, textStatus, err) {
+            console.log('Error: ', textStatus);
+        });
+};
 
-    return JSON.parse(response);
-}
+function getKalendereintraegeZuAbteilung(abteilung) {
+    $.ajax({
+        type: 'GET',
+        url: '/meldungen/meldungen-fuer-abteilung?abteilung=' + abteilung,
+        dataType: 'json'
+    })
+        .done(function (data) {
+            rendereKalendereintraege(data);
+        })
+        .fail(function (jqXHR, textStatus, err) {
+            console.log('Error: ', textStatus);
+        });
+};
 
+// Rendern des Seiteninhalts
 function rendereOffeneMeldungen(meldungen) {
     $('#accordion-offene-meldungen').empty();
     for (i = 0; i < meldungen.length; i++) {
@@ -72,7 +92,11 @@ function rendereOffeneMeldungen(meldungen) {
 
         var collapse = document.createElement("div");
         collapse.setAttribute("id", "collapse" + i);
-        collapse.setAttribute("class", "panel-collapse collapse");
+        if (i == 0) {
+            collapse.setAttribute("class", "panel-collapse collapse in");
+        } else {
+            collapse.setAttribute("class", "panel-collapse collapse");
+        }
 
         var panel_body = document.createElement("div");
         panel_body.setAttribute("class", "panel-body");
@@ -91,17 +115,11 @@ function rendereOffeneMeldungen(meldungen) {
 function rendereContentOffeneMeldungen(meldung, link, panel_body) {
 
     // Content für den Link
-    var mitarbeiter = getMitarbeiterByPersonalnummer(meldung.personalnummer);
-    if (mitarbeiter) {
-        var linkContent = meldung.meldungsart + "smeldung ";
-        linkContent += mitarbeiter[0].vorname + " ";
-        linkContent += mitarbeiter[0].name + " ";
-        linkContent += "(" + meldung.personalnummer + ")";
-
-        link.textContent = linkContent;
-    } else {
-        link.textContent = meldung.personalnummer;
-    }
+    var linkContent = meldung.meldungsart + "smeldung ";
+    linkContent += meldung.vorname + " ";
+    linkContent += meldung.name + " ";
+    linkContent += "(" + meldung.personalnummer + ")";
+    link.textContent = linkContent;
 
     // Content für den Panel-Body
     var form = document.createElement("form");
@@ -120,14 +138,14 @@ function rendereContentOffeneMeldungen(meldung, link, panel_body) {
     var input_email = document.createElement("input");
     input_email.setAttribute("type", "hidden");
     input_email.setAttribute("name", "email");
-    input_email.setAttribute("value", mitarbeiter[0].email);
+    input_email.setAttribute("value", meldung.email);
     form.appendChild(input_email);
 
     // Input-Feld Name
     var input_name = document.createElement("input");
     input_name.setAttribute("type", "hidden");
     input_name.setAttribute("name", "name");
-    input_name.setAttribute("value", mitarbeiter[0].name);
+    input_name.setAttribute("value", meldung.name);
     form.appendChild(input_name);
 
     // Input-Feld Meldungsart
@@ -141,7 +159,7 @@ function rendereContentOffeneMeldungen(meldung, link, panel_body) {
     var input_anrede = document.createElement("input");
     input_anrede.setAttribute("type", "hidden");
     input_anrede.setAttribute("name", "anrede");
-    input_anrede.setAttribute("value", mitarbeiter[0].anrede);
+    input_anrede.setAttribute("value", meldung.geschlecht);
     form.appendChild(input_anrede);
 
     // Tabelle
@@ -205,7 +223,7 @@ function rendereContentOffeneMeldungen(meldung, link, panel_body) {
     thead_tr.appendChild(thead_vom_dat);
 
     var tbody_vom_dat = document.createElement("td");
-    tbody_vom_dat.textContent = meldung.vom_dat.substring(0, 10);
+    tbody_vom_dat.textContent = meldung.vom_dat;
     tbody_tr.appendChild(tbody_vom_dat);
 
     // Bis-Dat
@@ -214,7 +232,7 @@ function rendereContentOffeneMeldungen(meldung, link, panel_body) {
     thead_tr.appendChild(thead_bis_dat);
 
     var tbody_bis_dat = document.createElement("td");
-    tbody_bis_dat.textContent = meldung.bis_dat.substring(0, 10);
+    tbody_bis_dat.textContent = meldung.bis_dat;
     tbody_tr.appendChild(tbody_bis_dat);
 
     // Halber Tag
@@ -222,7 +240,35 @@ function rendereContentOffeneMeldungen(meldung, link, panel_body) {
     thead_halber_tag.textContent = "Halber Tag";
     thead_tr.appendChild(thead_halber_tag);
 
+    var text_halber_tag = meldung.halber_tag == "vorm" ? "Vormittags" : meldung.halber_tag == "nachm" ? "Nachmittags" : "";
+
     var tbody_halber_tag = document.createElement("td");
-    tbody_halber_tag.textContent = meldung.halber_tag;
+    tbody_halber_tag.textContent = text_halber_tag;
     tbody_tr.appendChild(tbody_halber_tag);
+};
+
+function rendereAbteilungen(abteilungen) {
+    for (i = 0; i < abteilungen.length; i++) {
+        var option = document.createElement("option");
+        option.setAttribute("value", abteilungen[i].abteilung_nr);
+        option.textContent = abteilungen[i].abteilung;
+        $('#abteilung-uebersicht').append(option);
+    }
+};
+
+function rendereKalendereintraege(eintraege) {
+    for (i = 0; i < eintraege.length; i++) {
+        var eintrag = eintraege[i];
+
+        // Workaround End-Datum Fullcalendar
+        var end = eintrag.bis_dat.split('-');
+        end[2] = Number(end[2]) + 1;
+        end = end.join('-');
+
+        $('#calendar-uebersicht-mitarbeiter').fullCalendar('renderEvent', {
+            title: eintrag.meldungsart + " " + eintrag.vorname + " " + eintrag.name,
+            start: eintrag.vom_dat,
+            end: end
+        });
+    }
 };
