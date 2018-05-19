@@ -44,7 +44,7 @@ module.exports.getMeldungenByStatus = function (status, callback) {
                     if (err) {
                         callback(err, null);
                     } else {
-                        callback(null, meldungenMitMeldungsartAlsKlartext(result, meldungsarten));
+                        callback(null, ersetzteSchluesselDurchKlartext(result, meldungsarten));
                     }
                 });
             }
@@ -73,7 +73,7 @@ module.exports.getMeldungenByAbteilung = function (abteilung, callback) {
                     if (err) {
                         callback(err, null);
                     } else {
-                        callback(null, meldungenMitMeldungsartAlsKlartext(result, meldungsarten));
+                        callback(null, ersetzteSchluesselDurchKlartext(result, meldungsarten));
                     }
                 });
             }
@@ -81,13 +81,16 @@ module.exports.getMeldungenByAbteilung = function (abteilung, callback) {
     });
 };
 
-function meldungenMitMeldungsartAlsKlartext(meldungen, meldungsarten) {
+function ersetzteSchluesselDurchKlartext(meldungen, meldungsarten) {
     for (i = 0; i < meldungen.length; i++) {
         for (j = 0; j < meldungsarten.length; j++) {
             if (meldungen[i].meldungsart == meldungsarten[j].meldungsart_nr) {
                 meldungen[i].meldungsart = meldungsarten[j].meldungsart;
             }
         }
+
+        meldungen[i].halber_tag = meldungen[i].halber_tag == "vorm" ? "Vormittags" : meldungen[i].halber_tag == "nachm" ? "Nachmittags" : "";
+
     }
     return meldungen;
 }

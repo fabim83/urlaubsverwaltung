@@ -10,6 +10,7 @@
     <script src="/js/fullcalendar/moment.min.js"></script>
     <script src="/js/fullcalendar/fullcalendar.min.js"></script>
     <script src="/js/fullcalendar/de.js"></script>
+    <script src="/js/popper.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/ajax.js"></script>
     <script>
@@ -17,17 +18,23 @@
         $('#calendar-uebersicht-mitarbeiter').fullCalendar({
           locale: 'de',
           themeSystem: 'bootstrap3',
+          eventLimit: true,
           header: {
             left: 'title',
             center: '',
             right: 'prev,next'
+          },
+          eventRender: function(eventObj, $el){
+            $el.popover({
+              title: eventObj.title,
+              content: eventObj.description,
+              trigger: 'hover',
+              placement: 'top',
+              container: 'body'
+            });
           }
         }).on('click', '.fc-prev-button,.fc-next-button', function(){
-          var abteilung = $('#abteilung-uebersicht').val();
-
-          if(abteilung){
-            getKalendereintraegeZuAbteilung(abteilung);
-          }
+          blaetternUebersichtMitarbeiter();
         });
 
         $('#von_datum').on('change', function () {
@@ -44,15 +51,6 @@
             } else {
                 $('#divHalberTag').hide()
             }
-        });
-
-        $('#abteilung-uebersicht').on('change', function(){
-          $('#calendar-uebersicht-mitarbeiter').fullCalendar('removeEvents');
-          var abteilung = $('#abteilung-uebersicht').val();
-
-          if(abteilung){
-            getKalendereintraegeZuAbteilung(abteilung);
-          }
         });
 
         setAnzahlOffeneMeldungen();

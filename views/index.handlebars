@@ -86,12 +86,16 @@
         </div>
     </div>
     <div id="uebersicht-mitarbeiter" class="tab-pane fade" style="margin-top: 20px">
-        <div class="form-group">
-            <select class="form-control" id="abteilung-uebersicht">
-                <option value="" selected="selected">Bitte auswählen</option>
-            </select>
-        </div>
         <div id="calendar-uebersicht-mitarbeiter"></div>
+        <div class="btn-group dropup pull-right" style="margin-top: 15px">
+            <button type="button" class="btn btn-primary">Abteilung</button>
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" id="abteilung-uebersicht">
+            </ul>
+        </div>
     </div>
     {{/if}}
 </div>

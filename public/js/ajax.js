@@ -59,6 +59,10 @@ function getAbteilungen() {
 };
 
 function getKalendereintraegeZuAbteilung(abteilung) {
+    $('#calendar-uebersicht-mitarbeiter').fullCalendar('removeEvents');
+
+    zwi_abteilung = abteilung;
+
     $.ajax({
         type: 'GET',
         url: '/meldungen/meldungen-fuer-abteilung?abteilung=' + abteilung,
@@ -71,6 +75,14 @@ function getKalendereintraegeZuAbteilung(abteilung) {
             console.log('Error: ', textStatus);
         });
 };
+
+var zwi_abteilung;
+
+function blaetternUebersichtMitarbeiter() {
+    if (zwi_abteilung) {
+        getKalendereintraegeZuAbteilung(zwi_abteilung);
+    }
+}
 
 // Rendern des Seiteninhalts
 function rendereOffeneMeldungen(meldungen) {
@@ -240,19 +252,21 @@ function rendereContentOffeneMeldungen(meldung, link, panel_body) {
     thead_halber_tag.textContent = "Halber Tag";
     thead_tr.appendChild(thead_halber_tag);
 
-    var text_halber_tag = meldung.halber_tag == "vorm" ? "Vormittags" : meldung.halber_tag == "nachm" ? "Nachmittags" : "";
-
     var tbody_halber_tag = document.createElement("td");
-    tbody_halber_tag.textContent = text_halber_tag;
+    tbody_halber_tag.textContent = meldung.halber_tag;
     tbody_tr.appendChild(tbody_halber_tag);
 };
 
 function rendereAbteilungen(abteilungen) {
     for (i = 0; i < abteilungen.length; i++) {
-        var option = document.createElement("option");
-        option.setAttribute("value", abteilungen[i].abteilung_nr);
-        option.textContent = abteilungen[i].abteilung;
-        $('#abteilung-uebersicht').append(option);
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.setAttribute("onclick", "getKalendereintraegeZuAbteilung(this.id);");
+        a.setAttribute("id", abteilungen[i].abteilung_nr);
+        a.setAttribute("href", "#");
+        a.textContent = abteilungen[i].abteilung;
+        li.appendChild(a);
+        $('#abteilung-uebersicht').append(li);
     }
 };
 
@@ -268,7 +282,9 @@ function rendereKalendereintraege(eintraege) {
         $('#calendar-uebersicht-mitarbeiter').fullCalendar('renderEvent', {
             title: eintrag.meldungsart + " " + eintrag.vorname + " " + eintrag.name,
             start: eintrag.vom_dat,
-            end: end
+            end: end,
+            allDay: true,
+            description: eintrag.halber_tag
         });
     }
 };
