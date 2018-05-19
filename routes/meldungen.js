@@ -81,6 +81,17 @@ router.get('/meldungen-fuer-abteilung', isMitarbeiterAuthentifiziert, isVerwalte
     });
 });
 
+router.get('/historie', isMitarbeiterAuthentifiziert, function (req, res) {
+    Meldung.getMeldungenByMitarbeiterUndJahr(req.user[0].personalnummer, req.query.jahr, (err, result) => {
+        if (err) {
+            req.flash('error_msg', err.message);
+            res.redirect('/');
+        } else {
+            res.send(result);
+        }
+    });
+});
+
 function sendeBenachrichtigungAnMitarbeiter(anrede, email, name, status_neu, meldungsart) {
     let transporter = nodemailer.createTransport({
         host: 'mail.gmx.net',

@@ -30,6 +30,20 @@ function setAnzahlOffeneMeldungen() {
         });
 };
 
+function getHistorie(jahr) {
+    $.ajax({
+        type: 'GET',
+        url: '/meldungen/historie?jahr=' + jahr,
+        dataType: 'json'
+    })
+        .done(function (data) {
+            rendereHistorie(data, jahr);
+        })
+        .fail(function (jqXHR, textStatus, err) {
+            console.log('Error: ', textStatus);
+        });
+};
+
 function getOffeneMeldungen() {
     $.ajax({
         type: 'GET',
@@ -286,5 +300,73 @@ function rendereKalendereintraege(eintraege) {
             allDay: true,
             description: eintrag.halber_tag
         });
+    }
+};
+
+function rendereHistorie(meldungen, jahr) {
+    $('#jahr-historie').text(jahr);
+
+    var div_row = document.createElement("div");
+    div_row.setAttribute("class", "row");
+    $('#table-historie').empty();
+    $('#table-historie').append(div_row);
+
+    var div_col = document.createElement("div");
+    div_col.setAttribute("class", "col-md-12");
+    div_row.appendChild(div_col);
+
+    var table = document.createElement("table");
+    table.setAttribute("class", "table table-bordered");
+    div_col.appendChild(table);
+
+    var thead = document.createElement("thead");
+    table.appendChild(thead);
+    var thead_tr = document.createElement("tr");
+    thead.appendChild(thead_tr);
+
+    var tbody = document.createElement("tbody");
+    table.appendChild(tbody);
+
+    // Meldungsart
+    var thead_meldungsart = document.createElement("th");
+    thead_meldungsart.textContent = "Meldungsart";
+    thead_tr.appendChild(thead_meldungsart);
+
+    // Vom-Dat
+    var thead_vom_dat = document.createElement("th");
+    thead_vom_dat.textContent = "Beginndatum";
+    thead_tr.appendChild(thead_vom_dat);
+
+    // Bis-Dat
+    var thead_bis_dat = document.createElement("th");
+    thead_bis_dat.textContent = "Enddatum";
+    thead_tr.appendChild(thead_bis_dat);
+
+    // Halber Tag
+    var thead_halber_tag = document.createElement("th");
+    thead_halber_tag.textContent = "Halber Tag";
+    thead_tr.appendChild(thead_halber_tag);
+
+    for (i = 0; i < meldungen.length; i++) {
+        var meldung = meldungen[i];
+
+        var tbody_tr = document.createElement("tr");
+        tbody.appendChild(tbody_tr);
+        
+        var tbody_meldungsart = document.createElement("td");
+        tbody_meldungsart.textContent = meldung.meldungsart;
+        tbody_tr.appendChild(tbody_meldungsart);
+
+        var tbody_vom_dat = document.createElement("td");
+        tbody_vom_dat.textContent = meldung.vom_dat;
+        tbody_tr.appendChild(tbody_vom_dat);
+
+        var tbody_bis_dat = document.createElement("td");
+        tbody_bis_dat.textContent = meldung.bis_dat;
+        tbody_tr.appendChild(tbody_bis_dat);
+
+        var tbody_halber_tag = document.createElement("td");
+        tbody_halber_tag.textContent = meldung.halber_tag;
+        tbody_tr.appendChild(tbody_halber_tag);
     }
 };

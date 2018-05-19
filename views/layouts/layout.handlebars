@@ -13,52 +13,6 @@
     <script src="/js/popper.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/ajax.js"></script>
-    <script>
-      $(function(){
-        $('#calendar-uebersicht-mitarbeiter').fullCalendar({
-          locale: 'de',
-          themeSystem: 'bootstrap3',
-          eventLimit: true,
-          header: {
-            left: 'title',
-            center: '',
-            right: 'prev,next'
-          },
-          eventRender: function(eventObj, $el){
-            $el.popover({
-              title: eventObj.title,
-              content: eventObj.description,
-              trigger: 'hover',
-              placement: 'top',
-              container: 'body'
-            });
-          }
-        }).on('click', '.fc-prev-button,.fc-next-button', function(){
-          blaetternUebersichtMitarbeiter();
-        });
-
-        $('#von_datum').on('change', function () {
-            if ($('#von_datum').val() == $('#bis_datum').val()) {
-                $('#divHalberTag').show();
-            } else {
-                $('#divHalberTag').hide()
-            }
-        });
-
-        $('#bis_datum').on('change', function () {
-            if ($('#von_datum').val() == $('#bis_datum').val()) {
-                $('#divHalberTag').show();
-            } else {
-                $('#divHalberTag').hide()
-            }
-        });
-
-        setAnzahlOffeneMeldungen();
-        getUebersicht();
-        getOffeneMeldungen();
-        getAbteilungen();
-      });
-    </script>
 </head>
 <body>
     <div class="container">

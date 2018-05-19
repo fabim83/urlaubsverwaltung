@@ -31,6 +31,27 @@ module.exports.getMeldungenZuMitarbeiter = function (personalnummer, callback) {
     });
 };
 
+module.exports.getMeldungenByMitarbeiterUndJahr = function (personalnummer, jahr, callback) {
+    db.connect((err) => {
+        var sql = "SELECT * from UV_MELDUNG WHERE PERSONALNUMMER = ? AND YEAR(VOM_DAT) = ? AND MELDUNGSSTATUS = 'Genehmigt' ORDER BY VOM_DAT";
+        var values = [personalnummer, jahr];
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                callback(err, null);
+            } else {
+                sql = "SELECT * FROM UV_MELDUNGSART";
+                db.query(sql, (err, meldungsarten) => {
+                    if (err) {
+                        callback(err, null);
+                    } else {
+                        callback(null, ersetzteSchluesselDurchKlartext(result, meldungsarten));
+                    }
+                });
+            }
+        });
+    });
+};
+
 module.exports.getMeldungenByStatus = function (status, callback) {
     db.connect((err) => {
         var sql = "SELECT * from UV_MELDUNG x JOIN UV_MITARBEITER y ON x.PERSONALNUMMER = y.PERSONALNUMMER WHERE MELDUNGSSTATUS = ?";

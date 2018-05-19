@@ -1,3 +1,75 @@
+<script>
+    $(function(){
+        $('#calendar-uebersicht-mitarbeiter').fullCalendar({
+          locale: 'de',
+          themeSystem: 'bootstrap3',
+          eventLimit: true,
+          header: {
+            left: 'title',
+            center: '',
+            right: 'prev,next'
+          },
+          eventRender: function(eventObj, $el){
+            $el.popover({
+              title: eventObj.title,
+              content: eventObj.description,
+              trigger: 'hover',
+              placement: 'top',
+              container: 'body'
+            });
+          }
+        }).on('click', '.fc-prev-button,.fc-next-button', function(){
+          blaetternUebersichtMitarbeiter();
+        });
+
+        $('#von_datum').on('change', function () {
+            if ($('#von_datum').val() == $('#bis_datum').val()) {
+                $('#divHalberTag').show();
+            } else {
+                $('#divHalberTag').hide()
+            }
+        });
+
+        $('#bis_datum').on('change', function () {
+            if ($('#von_datum').val() == $('#bis_datum').val()) {
+                $('#divHalberTag').show();
+            } else {
+                $('#divHalberTag').hide()
+            }
+        });
+
+        $('#link-prev-historie').on('click', function () {
+            var angezeigtes_jahr = Number($('#jahr-historie').text());
+            var aktuelles_jahr = new Date().getFullYear();
+
+            if(angezeigtes_jahr - 1 == aktuelles_jahr - 3){
+                $('#li-prev-historie').addClass("disabled");
+            }
+
+            $('#li-next-historie').removeClass("disabled");
+            getHistorie(angezeigtes_jahr - 1);
+        });
+
+        $('#link-next-historie').on('click', function () {
+            var angezeigtes_jahr = Number($('#jahr-historie').text());
+            var aktuelles_jahr = new Date().getFullYear();
+
+            if(angezeigtes_jahr + 1 == aktuelles_jahr - 1){
+                $('#li-next-historie').addClass("disabled");
+            }
+
+            $('#li-prev-historie').removeClass("disabled");
+            getHistorie(angezeigtes_jahr + 1);
+        });
+
+        setAnzahlOffeneMeldungen();
+        getUebersicht();
+        getHistorie(new Date().getFullYear() - 1);
+        getOffeneMeldungen();
+        getAbteilungen();
+      });
+</script>
+
 {{#if errors}} {{#each errors}}
 <div class="alert alert-danger">{{msg}}</div>
 {{/each}} {{/if}}
@@ -77,8 +149,14 @@
         </form>
     </div>
     <div id="historie" class="tab-pane fade" style="margin-top: 20px">
-        <h3>Menu 2</h3>
-        <p>Some content in menu 2.</p>
+        <nav>
+            <ul class="pager">
+                <li class="previous" id="li-prev-historie"><a href="#" id="link-prev-historie"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+                <li class="text-primary" style="font-size: 160%" id="jahr-historie"></li>
+                <li class="next" id="li-next-historie"><a href="#" id="link-next-historie"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+            </ul>
+        </nav>
+        <div id="table-historie" style="margin-top: 15px"></div>
     </div>
     {{#if verwalter}}
     <div id="offene-meldungen" class="tab-pane fade" style="margin-top: 20px">
