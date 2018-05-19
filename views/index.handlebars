@@ -39,6 +39,10 @@
         });
 
         $('#link-prev-historie').on('click', function () {
+            if($('#li-prev-historie').hasClass("disabled")) {
+                return;
+            }
+
             var angezeigtes_jahr = Number($('#jahr-historie').text());
             var aktuelles_jahr = new Date().getFullYear();
 
@@ -50,7 +54,11 @@
             getHistorie(angezeigtes_jahr - 1);
         });
 
-        $('#link-next-historie').on('click', function () {
+        $('#link-next-historie').on('click', function () {7
+            if($('#li-next-historie').hasClass("disabled")) {
+                return;
+            }
+
             var angezeigtes_jahr = Number($('#jahr-historie').text());
             var aktuelles_jahr = new Date().getFullYear();
 
