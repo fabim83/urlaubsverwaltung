@@ -98,6 +98,24 @@ function blaetternUebersichtMitarbeiter() {
     if (zwi_abteilung) {
         getKalendereintraegeZuAbteilung(zwi_abteilung);
     }
+};
+
+function getNeueMeldung() {
+
+};
+
+function getMeldungStornieren() {
+    $.ajax({
+        type: 'GET',
+        url: '/meldungen/meldung-stornieren',
+        dataType: 'json'
+    })
+        .done(function (data) {
+            rendereMeldungStornieren(data);
+        })
+        .fail(function (jqXHR, textStatus, err) {
+            console.log('Error: ', textStatus);
+        });
 }
 
 /**
@@ -357,7 +375,7 @@ function rendereHistorie(meldungen, jahr) {
 
         var tbody_tr = document.createElement("tr");
         tbody.appendChild(tbody_tr);
-        
+
         var tbody_meldungsart = document.createElement("td");
         tbody_meldungsart.textContent = meldung.meldungsart;
         tbody_tr.appendChild(tbody_meldungsart);
@@ -373,5 +391,51 @@ function rendereHistorie(meldungen, jahr) {
         var tbody_halber_tag = document.createElement("td");
         tbody_halber_tag.textContent = meldung.halber_tag;
         tbody_tr.appendChild(tbody_halber_tag);
+    }
+};
+
+function rendereMeldungStornieren(meldungen) {
+    for(i = 0; i < meldungen.length; i++){
+        console.log(meldungen);
+        var meldung = meldungen[i];
+
+        var form = document.createElement("form");
+        form.setAttribute("method", "POST");
+        form.setAttribute("action", "/meldungen/meldung-stornieren");
+        $('#meldung-form').append(form);
+
+        // Input-Feld Meldungs-Nr
+        var input_meldungsnr = document.createElement("input");
+        input_meldungsnr.setAttribute("type", "hidden");
+        input_meldungsnr.setAttribute("name", "meldung_nr");
+        input_meldungsnr.setAttribute("value", meldung.meldung_nr);
+        form.appendChild(input_meldungsnr);
+
+        var div_input_group = document.createElement("div");
+        div_input_group.setAttribute("class", "input-group");
+        form.appendChild(div_input_group);
+
+        var input = document.createElement("input");
+        input.setAttribute("type", "text");
+        input.setAttribute("class", "form-control");
+        var input_value_halber_tag = meldung.halber_tag ? " (" + meldung.halber_tag + ")" : "";
+        var input_value = meldung.meldungsart + " vom " + meldung.vom_dat + " bis " + meldung.bis_dat + input_value_halber_tag;
+        console.log(input_value);
+        input.setAttribute("value", input_value);
+        input.disabled = true;
+        div_input_group.appendChild(input);
+
+        var span_button = document.createElement("span");
+        span_button.setAttribute("class", "input-group-btn");
+        div_input_group.appendChild(span_button);
+
+        var button_submit = document.createElement("button");
+        button_submit.setAttribute("class", "btn btn-default");
+        button_submit.setAttribute("type", "submit");
+        span_button.appendChild(button_submit);
+
+        var span_glyphicon = document.createElement("span");
+        span_glyphicon.setAttribute("class", "glyphicon glyphicon-remove");
+        button_submit.appendChild(span_glyphicon);
     }
 };

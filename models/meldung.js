@@ -31,6 +31,22 @@ module.exports.getMeldungenZuMitarbeiter = function (personalnummer, callback) {
     });
 };
 
+module.exports.getMeldungByID = function (meldung_nr, callback) {
+    db.connect((err) => {
+        var sql = "SELECT * from UV_MELDUNG WHERE MELDUNG_NR = ?";
+        var values = [meldung_nr];
+        db.query(sql, values, callback);
+    });
+};
+
+module.exports.removeMeldungByID = function (meldung_nr, callback) {
+    db.connect((err) => {
+        var sql = "DELETE from UV_MELDUNG WHERE MELDUNG_NR = ?";
+        var values = [meldung_nr];
+        db.query(sql, values, callback);
+    });
+};
+
 module.exports.getMeldungenByMitarbeiterUndJahr = function (personalnummer, jahr, callback) {
     db.connect((err) => {
         var sql = "SELECT * from UV_MELDUNG WHERE PERSONALNUMMER = ? AND YEAR(VOM_DAT) = ? AND MELDUNGSSTATUS = 'Genehmigt' ORDER BY VOM_DAT";

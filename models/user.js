@@ -30,6 +30,30 @@ module.exports.getMitarbeiterByPersonalnummer = function (personalnummer, callba
     });
 };
 
+module.exports.getUrlaubstageByPersonalnummer = function (personalnummer, callback){
+    db.connect((err) => {
+        var sql = "SELECT urlaub_jahr FROM UV_MITARBEITER WHERE PERSONALNUMMER = ?";
+        var values = [personalnummer];
+        db.query(sql, values, callback);
+    });
+};
+
+module.exports.reduziereUrlaubstageByPersonalnummer = function (personalnummer, anzahlTage, callback){
+    db.connect((err) => {
+        var sql = "UPDATE UV_MITARBEITER SET URLAUB_JAHR = URLAUB_JAHR - ? WHERE PERSONALNUMMER = ?";
+        var values = [anzahlTage, personalnummer];
+        db.query(sql, values, callback);
+    });
+};
+
+module.exports.erhoeheUrlaubstageByPersonalnummer = function (personalnummer, anzahlTage, callback){
+    db.connect((err) => {
+        var sql = "UPDATE UV_MITARBEITER SET URLAUB_JAHR = URLAUB_JAHR + ? WHERE PERSONALNUMMER = ?";
+        var values = [anzahlTage, personalnummer];
+        db.query(sql, values, callback);
+    });
+};
+
 module.exports.getAbteilungen = function (callback){
     db.connect((err) => {
         var sql = "SELECT * FROM UV_ABTEILUNG;";

@@ -70,6 +70,24 @@
             getHistorie(angezeigtes_jahr + 1);
         });
 
+        $('#link-neue-meldung').on('click', function(){
+            $('#meldung-form').empty();
+            $('#meldung-heading').text("Neue Meldung");
+            getNeueMeldung();
+            $('#link-meldung-stornieren').removeClass("active");
+            $('#link-neue-meldung').addClass("active");
+            $('#div-meldung-form').css("display", "");
+        });
+
+        $('#link-meldung-stornieren').on('click', function(){
+            $('#meldung-form').empty();
+            $('#meldung-heading').text("Meldung stornieren");
+            getMeldungStornieren();
+            $('#link-neue-meldung').removeClass("active");
+            $('#link-meldung-stornieren').addClass("active");
+            $('#div-meldung-form').css("display", "");
+        });
+
         setAnzahlOffeneMeldungen();
         getUebersicht();
         getHistorie(new Date().getFullYear() - 1);
@@ -130,6 +148,16 @@
         </div>
     </div>
     <div id="meldung" class="tab-pane fade" style="margin-top: 20px">
+        <div class="list-group">
+            <a href="#" class="list-group-item" id="link-neue-meldung">Neue Meldung</a>
+            <a href="#" class="list-group-item" id="link-meldung-stornieren">Meldung stornieren</a>
+        </div>
+
+        <div class="panel panel-default" style="display: none" id="div-meldung-form">
+            <div class="panel-heading" id="meldung-heading"></div>
+            <div class="panel-body" id="meldung-form"></div>
+        </div>
+        <!--
         <form method="POST" action="/meldungen/erfassen">
             <div class="form-group">
                 <select class="form-control" name="meldungsart">
@@ -155,6 +183,7 @@
             </div>
             <button type="submit" class="btn btn-default">Abschicken</button>
         </form>
+        -->
     </div>
     <div id="historie" class="tab-pane fade" style="margin-top: 20px">
         <nav>
