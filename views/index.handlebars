@@ -71,21 +71,37 @@
         });
 
         $('#link-neue-meldung').on('click', function(){
-            $('#meldung-form').empty();
-            $('#meldung-heading').text("Neue Meldung");
-            getNeueMeldung();
             $('#link-meldung-stornieren').removeClass("active");
             $('#link-neue-meldung').addClass("active");
-            $('#div-meldung-form').css("display", "");
+            $('#panel-neue-meldung').css("display", "");
+            $('#panel-meldung-stornieren').css("display", "none");
         });
 
         $('#link-meldung-stornieren').on('click', function(){
-            $('#meldung-form').empty();
-            $('#meldung-heading').text("Meldung stornieren");
+            $('#panel-body-meldung-stornieren').empty();
             getMeldungStornieren();
             $('#link-neue-meldung').removeClass("active");
             $('#link-meldung-stornieren').addClass("active");
-            $('#div-meldung-form').css("display", "");
+            $('#panel-meldung-stornieren').css("display", "");
+            $('#panel-neue-meldung').css("display", "none");
+        });
+
+        $('#div_von_datum').datepicker({
+            altField: "#von_datum",
+            altFormat: "yy-mm-dd",
+            onSelect: function(){
+                var minDate = new Date($('#von_datum').val());
+                $('#div_bis_datum').datepicker( "option", "minDate", minDate );
+            }
+        });
+
+        $('#div_bis_datum').datepicker({
+            altField: "#bis_datum",
+            altFormat: "yy-mm-dd",
+            onSelect: function(){
+                var maxDate = new Date($('#bis_datum').val());
+                $('#div_von_datum').datepicker( "option", "maxDate",  maxDate);
+            }
         });
 
         setAnzahlOffeneMeldungen();
@@ -153,37 +169,42 @@
             <a href="#" class="list-group-item" id="link-meldung-stornieren">Meldung stornieren</a>
         </div>
 
-        <div class="panel panel-default" style="display: none" id="div-meldung-form">
-            <div class="panel-heading" id="meldung-heading"></div>
-            <div class="panel-body" id="meldung-form"></div>
+        <div class="panel panel-default" style="display: none" id="panel-neue-meldung">
+            <div class="panel-heading" id="panel-heading-neue-meldung">Neue Meldung</div>
+            <div class="panel-body" id="panel-body-neue-meldung">
+                <form method="POST" action="/meldungen/erfassen">
+                    <div class="form-group">
+                        <select class="form-control" name="meldungsart">
+                            <option value="Urlaub">Urlaub</option>
+                            <option value="Krankheit">Krankheit</option>
+                            <option value="Sonderurlaub">Sonderurlaub</option>
+                        </select>
+                    </div>
+                    <div align="center">
+                        <div id="div_von_datum" class="form-group">
+                            <input type="hidden" name="von_datum" id="von_datum">
+                        </div>
+                        <span style="display: inline-block; width: 5px;"></span>
+                        <div id="div_bis_datum" class="form-group">
+                            <input type="hidden" name="bis_datum" id="bis_datum">
+                        </div>
+                    </div>
+                    <div class="form-group" style="display: none" id="divHalberTag">
+                        <select class="form-control" name="halber_tag">
+                            <option selected="selected"></option>
+                            <option value="vorm">Vormittags</option>
+                            <option value="nachm">Nachmittags</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-default">Abschicken</button>
+                </form>
+            </div>
         </div>
-        <!--
-        <form method="POST" action="/meldungen/erfassen">
-            <div class="form-group">
-                <select class="form-control" name="meldungsart">
-                    <option value="Urlaub">Urlaub</option>
-                    <option value="Krankheit">Krankheit</option>
-                    <option value="Sonderurlaub">Sonderurlaub</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Beginndatum</label>
-                <input type="text" class="form-control" name="von_datum" id="von_datum" />
-            </div>
-            <div class="form-group">
-                <label>Enddatum</label>
-                <input type="text" class="form-control" name="bis_datum" id="bis_datum" />
-            </div>
-            <div class="form-group" style="display: none" id="divHalberTag">
-                <select class="form-control" name="halber_tag">
-                    <option selected="selected"></option>
-                    <option value="vorm">Vormittags</option>
-                    <option value="nachm">Nachmittags</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-default">Abschicken</button>
-        </form>
-        -->
+
+        <div class="panel panel-default" style="display: none" id="panel-meldung-stornieren">
+            <div class="panel-heading" id="panel-heading-meldung-stornieren">Meldung stornieren</div>
+            <div class="panel-body" id="panel-body-meldung-stornieren"></div>
+        </div>
     </div>
     <div id="historie" class="tab-pane fade" style="margin-top: 20px">
         <nav>

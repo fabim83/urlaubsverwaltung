@@ -100,10 +100,6 @@ function blaetternUebersichtMitarbeiter() {
     }
 };
 
-function getNeueMeldung() {
-
-};
-
 function getMeldungStornieren() {
     $.ajax({
         type: 'GET',
