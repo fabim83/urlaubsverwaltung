@@ -50,7 +50,7 @@ abteilung smallint,
 email varchar(45),
 passwort varchar(255) not null,
 kz_verwalter boolean,
-urlaub_pro_jahr smallint,
+urlaub_jahr smallint,
 Primary Key (personalnummer),
 foreign key (abteilung) references uv_abteilung(abteilung_nr) on delete set null);
 
@@ -116,6 +116,15 @@ INSERT INTO uv_meldung (personalnummer, meldungsart, meldungsstatus, vom_dat, bi
 /*!40000 ALTER TABLE uv_meldung ENABLE KEYS */;
 UNLOCK TABLES;
 
+--
+-- Scheduled Task für Update der Urlaubstage
+--
+SET GLOBAL event_scheduler = ON;
+CREATE EVENT IF NOT EXISTS UPDATE_URLAUBSTAGE
+ON SCHEDULE EVERY '1' YEAR
+STARTS CONCAT(CONVERT(YEAR(NOW()) + 1, char), '-01-01 00:00:00')
+DO
+UPDATE uv_mitarbeiter SET urlaub_jahr = urlaub_jahr + 30;
 
 
 
