@@ -1,4 +1,6 @@
-// AJAX-Calls
+/**
+ * AJAX-Calls
+ */
 function getUebersicht() {
     $.ajax({
         type: 'POST',
@@ -98,7 +100,10 @@ function blaetternUebersichtMitarbeiter() {
     }
 }
 
-// Rendern des Seiteninhalts
+/**
+ * Rendern des Seiteninhalts
+ */
+
 function rendereOffeneMeldungen(meldungen) {
     $('#accordion-offene-meldungen').empty();
     for (i = 0; i < meldungen.length; i++) {
