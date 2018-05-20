@@ -22,22 +22,6 @@
           blaetternUebersichtMitarbeiter();
         });
 
-        $('#von_datum').on('change', function () {
-            if ($('#von_datum').val() == $('#bis_datum').val()) {
-                $('#divHalberTag').show();
-            } else {
-                $('#divHalberTag').hide()
-            }
-        });
-
-        $('#bis_datum').on('change', function () {
-            if ($('#von_datum').val() == $('#bis_datum').val()) {
-                $('#divHalberTag').show();
-            } else {
-                $('#divHalberTag').hide()
-            }
-        });
-
         $('#link-prev-historie').on('click', function () {
             if($('#li-prev-historie').hasClass("disabled")) {
                 return;
@@ -89,18 +73,40 @@
         $('#div_von_datum').datepicker({
             altField: "#von_datum",
             altFormat: "yy-mm-dd",
+            beforeShowDay: $.datepicker.noWeekends,
             onSelect: function(){
-                var minDate = new Date($('#von_datum').val());
-                $('#div_bis_datum').datepicker( "option", "minDate", minDate );
+                $('#div_bis_datum').datepicker( "option", "minDate", new Date($('#von_datum').val()) );
+                $('#von_datum').change();
             }
         });
 
         $('#div_bis_datum').datepicker({
             altField: "#bis_datum",
             altFormat: "yy-mm-dd",
+            beforeShowDay: $.datepicker.noWeekends,
             onSelect: function(){
-                var maxDate = new Date($('#bis_datum').val());
-                $('#div_von_datum').datepicker( "option", "maxDate",  maxDate);
+                $('#div_von_datum').datepicker( "option", "maxDate",  new Date($('#bis_datum').val()));
+                $('#bis_datum').change();
+            }
+        });
+
+        $('#von_datum').on('change', function () {
+            if ($('#von_datum').val() == $('#bis_datum').val()) {
+                $('#labelHalberTag').show();
+                $('#divHalberTag').show();
+            } else {
+                $('#labelHalberTag').hide();
+                $('#divHalberTag').hide()
+            }
+        });
+
+        $('#bis_datum').on('change', function () {
+            if ($('#von_datum').val() == $('#bis_datum').val()) {
+                $('#labelHalberTag').show();
+                $('#divHalberTag').show();
+            } else {
+                $('#labelHalberTag').hide();
+                $('#divHalberTag').hide()
             }
         });
 
@@ -173,30 +179,61 @@
             <div class="panel-heading" id="panel-heading-neue-meldung">Neue Meldung</div>
             <div class="panel-body" id="panel-body-neue-meldung">
                 <form method="POST" action="/meldungen/erfassen">
-                    <div class="form-group">
-                        <select class="form-control" name="meldungsart">
-                            <option value="Urlaub">Urlaub</option>
-                            <option value="Krankheit">Krankheit</option>
-                            <option value="Sonderurlaub">Sonderurlaub</option>
-                        </select>
-                    </div>
-                    <div align="center">
-                        <div id="div_von_datum" class="form-group">
-                            <input type="hidden" name="von_datum" id="von_datum">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-12"><label>Meldungart</label></div>
                         </div>
-                        <span style="display: inline-block; width: 5px;"></span>
-                        <div id="div_bis_datum" class="form-group">
-                            <input type="hidden" name="bis_datum" id="bis_datum">
+                        <div class="row">
+                            <div class="col-lg-10">
+                                <select class="form-control" name="meldungsart">
+                                    <option value="Urlaub">Urlaub</option>
+                                    <option value="Krankheit">Krankheit</option>
+                                    <option value="Sonderurlaub">Sonderurlaub</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2"></div>
+                        </div>
+                        <div class="row" style="margin-top: 15px">
+                            <div class="col-lg-4">
+                                <label>Beginndatum</label>
+                            </div>
+                            <div class="col-lg-2"></div>
+                            <div class="col-lg-4">
+                                <label>Enddatum</label>
+                            </div>
+                            <div class="col-lg-2"></div>
+                        </div>
+                        <div class="row">
+                            <div id="div_von_datum" class="col-lg-4">
+                                <input type="hidden" name="von_datum" id="von_datum">
+                            </div>
+                            <div class="col-lg-2"></div>
+                            <div id="div_bis_datum" class="col-lg-4">
+                                <input type="hidden" name="bis_datum" id="bis_datum">
+                            </div>
+                            <div class="col-lg-2"></div>
+                        </div>
+                        <div class="row" style="display: none; margin-top: 15px;" id="labelHalberTag">
+                            <div class="col-lg-12">
+                                <label>Halber Tag</label>
+                            </div>
+                        </div>
+                        <div class="row" style="display: none" id="divHalberTag">
+                            <div class="col-lg-10">
+                                <select class="form-control" name="halber_tag">
+                                    <option selected="selected"></option>
+                                    <option value="vorm">Vormittags</option>
+                                    <option value="nachm">Nachmittags</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2"></div>
+                        </div>
+                        <div class="row" style="margin-top: 15px">
+                            <div class="col-lg-12">
+                                <button  type="submit" class="btn btn-default">Abschicken</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group" style="display: none" id="divHalberTag">
-                        <select class="form-control" name="halber_tag">
-                            <option selected="selected"></option>
-                            <option value="vorm">Vormittags</option>
-                            <option value="nachm">Nachmittags</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-default">Abschicken</button>
                 </form>
             </div>
         </div>
