@@ -36,7 +36,7 @@ router.post('/erfassen', isMitarbeiterAuthentifiziert, function (req, res) {
                             req.flash('error_msg', err.message);
                             res.redirect('/');
                         } else {
-                            if (req.files && req.body.meldungsart == "Krankheit") {
+                            if (req.files.bescheinigung && req.body.meldungsart == "Krankheit") {
                                 let bescheinigung = req.files.bescheinigung;
                                 var dateipfad = 'bescheinigungen/' + req.user[0].name + '_' + req.user[0].vorname + '_' + req.body.von_datum + '_' + req.body.bis_datum + '.pdf';
                                 bescheinigung.mv(dateipfad, (err) => {
@@ -105,6 +105,33 @@ router.post('/status-aktualisieren', isMitarbeiterAuthentifiziert, isVerwalter, 
                                 sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status_neu, req.body.meldungsart);
                                 req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
                                 res.redirect('/');
+                            }
+                        });
+                    }
+                });
+            } else if (req.body.meldungsart == "Krankheit") {
+                Meldung.getMeldungByID(req.body.meldung_nr, (err, meldungen) => {
+                    if (err) {
+                        req.flash('error_msg', err.message);
+                        res.redirect('/');
+                    } else {
+                        var meldung = meldungen[0];
+                        Meldung.getKollidierendeMeldungen(meldung.personalnummer, meldung.vom_dat, meldung.bis_dat, (err, result) => {
+                            if (err) {
+                                req.flash('error_msg', err.message);
+                                res.redirect('/');
+                            } else {
+                                var anzahlTage = ermittleAnzahlGutzuschreibendeTage(new Date(meldung.vom_dat), new Date(meldung.bis_dat), new Date(result[0].vom_dat), new Date(result[0].bis_dat));
+                                User.erhoeheUrlaubstageByPersonalnummer(meldung.personalnummer, anzahlTage, (err, result) => {
+                                    if (err) {
+                                        req.flash('error_msg', err.message);
+                                        res.redirect('/');
+                                    } else {
+                                        sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status_neu, req.body.meldungsart);
+                                        req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
+                                        res.redirect('/');
+                                    }
+                                });
                             }
                         });
                     }
@@ -247,6 +274,24 @@ function getAnzahlWerktage(startDate, endDate) {
         curDate.setDate(curDate.getDate() + 1);
     }
     return count;
+};
+
+function ermittleAnzahlGutzuschreibendeTage(startDate, endDate, colStartDate, colEndDate) {
+    if (colStartDate <= startDate && colEndDate >= endDate) {
+        return getAnzahlWerktage(startDate, endDate);
+    }
+
+    if (startDate < colStartDate && endDate > colStartDate && endDate <= colEndDate) {
+        return getAnzahlWerktage(colStartDate, endDate);
+    }
+
+    if (startDate >= colStartDate && startDate <= colEndDate && endDate > colEndDate) {
+        return getAnzahlWerktage(startDate, colEndDate);
+    }
+
+    if (startDate < colStartDate && endDate > colEndDate) {
+        return getAnzahlWerktage(colStartDate, colEndDate);
+    }
 };
 
 function isMitarbeiterAuthentifiziert(req, res, next) {

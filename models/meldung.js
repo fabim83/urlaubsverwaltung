@@ -118,6 +118,14 @@ module.exports.getMeldungenByAbteilung = function (abteilung, callback) {
     });
 };
 
+module.exports.getKollidierendeMeldungen = function (personalnummer, vom_dat, bis_dat, callback) {
+    db.connect((err) => {
+        var sql = "SELECT x.vom_dat, x.bis_dat FROM uv_meldung x JOIN uv_meldungsart y ON x.meldungsart = y.meldungsart_nr WHERE x.personalnummer = ? AND y.meldungsart = 'Urlaub' AND x.meldungsstatus = 'Genehmigt' AND ((x.vom_dat <= ? AND x.bis_dat >= ?) OR (x.vom_dat <= ? AND x.bis_dat >= ?) OR (x.vom_dat > ? AND x.bis_dat < ?))";
+        var values = [personalnummer, vom_dat, vom_dat, bis_dat, bis_dat, vom_dat, bis_dat];
+        db.query(sql, values, callback);
+    });
+}
+
 function ersetzteSchluesselDurchKlartext(meldungen, meldungsarten) {
     for (i = 0; i < meldungen.length; i++) {
         for (j = 0; j < meldungsarten.length; j++) {
