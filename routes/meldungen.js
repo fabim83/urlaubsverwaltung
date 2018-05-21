@@ -30,7 +30,7 @@ router.post('/erfassen', isMitarbeiterAuthentifiziert, function (req, res) {
                         bis_dat: req.body.bis_datum,
                         halber_tag: req.body.halber_tag
                     };
-                    
+
                     Meldung.createMeldung(meldung, (err, result) => {
                         if (err) {
                             req.flash('error_msg', err.message);
@@ -42,12 +42,12 @@ router.post('/erfassen', isMitarbeiterAuthentifiziert, function (req, res) {
                     });
                 }
             }
-        });        
+        });
     }
 });
 
 router.post('/uebersicht', isMitarbeiterAuthentifiziert, function (req, res) {
-    Meldung.getMeldungenZuMitarbeiter(req.user[0].personalnummer, (err, result) => {
+    Meldung.getMeldungenByMitarbeiterUndJahr(req.user[0].personalnummer, new Date().getFullYear(), (err, result) => {
         if (err) {
             req.flash('error_msg', err.message);
             res.redirect('/');
@@ -75,25 +75,31 @@ router.post('/status-aktualisieren', isMitarbeiterAuthentifiziert, isVerwalter, 
             req.flash('error_msg', err.message);
             res.redirect('/');
         } else {
-            Meldung.getMeldungByID(req.body.meldung_nr, (err, result) => {
-                if (err) {
-                    req.flash('error_msg', err.message);
-                    res.redirect('/');
-                } else {
-                    var meldung = result[0];
-                    var anzahlTage = getAnzahlWerktage(new Date(meldung.vom_dat), new Date(meldung.bis_dat));
-                    User.reduziereUrlaubstageByPersonalnummer(meldung.personalnummer, anzahlTage, (err, result) => {
-                        if (err) {
-                            req.flash('error_msg', err.message);
-                            res.redirect('/');
-                        } else {
-                            sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status_neu, req.body.meldungsart);
-                            req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
-                            res.redirect('/');
-                        }
-                    });
-                }
-            });
+            if (req.body.meldungsart == "Urlaub") {
+                Meldung.getMeldungByID(req.body.meldung_nr, (err, result) => {
+                    if (err) {
+                        req.flash('error_msg', err.message);
+                        res.redirect('/');
+                    } else {
+                        var meldung = result[0];
+                        var anzahlTage = getAnzahlWerktage(new Date(meldung.vom_dat), new Date(meldung.bis_dat));
+                        User.reduziereUrlaubstageByPersonalnummer(meldung.personalnummer, anzahlTage, (err, result) => {
+                            if (err) {
+                                req.flash('error_msg', err.message);
+                                res.redirect('/');
+                            } else {
+                                sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status_neu, req.body.meldungsart);
+                                req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
+                                res.redirect('/');
+                            }
+                        });
+                    }
+                });
+            } else {
+                sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status_neu, req.body.meldungsart);
+                req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
+                res.redirect('/');
+            }
 
         }
     });
@@ -134,7 +140,7 @@ router.get('/meldung-stornieren', isMitarbeiterAuthentifiziert, function (req, r
 
 router.post('/meldung-stornieren', isMitarbeiterAuthentifiziert, function (req, res) {
     Meldung.getMeldungByID(req.body.meldung_nr, (err, result) => {
-        if(err) {
+        if (err) {
             req.flash('error_msg', err.message);
             res.redirect('/');
         } else {

@@ -1,5 +1,19 @@
 <script>
     $(function(){
+        $('#calendar-uebersicht').fullCalendar({
+          locale: 'de',
+          themeSystem: 'bootstrap3',
+          eventLimit: true,
+          header: {
+            left: 'title',
+            center: '',
+            right: 'prev,next'
+          }
+        }).on('click', '.fc-prev-button,.fc-next-button', function(){
+          getUebersicht();
+          getResturlaub();
+        });
+
         $('#calendar-uebersicht-mitarbeiter').fullCalendar({
           locale: 'de',
           themeSystem: 'bootstrap3',
@@ -110,9 +124,10 @@
             }
         });
 
-        setAnzahlOffeneMeldungen();
         getUebersicht();
+        getResturlaub();
         getHistorie(new Date().getFullYear() - 1);
+        setAnzahlOffeneMeldungen();
         getOffeneMeldungen();
         getAbteilungen();
       });
@@ -147,25 +162,28 @@
 
 <div class="tab-content">
     <div id="uebersicht" class="tab-pane fade in active" style="margin-top: 20px">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Urlaub</h3>
-            </div>
-            <div class="panel-body" id="panel-body-urlaub">
-            </div>
-        </div>
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Krankheit</h3>
-            </div>
-            <div class="panel-body" id="panel-body-krankheit">
-            </div>
-        </div>
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Sonderurlaub</h3>
-            </div>
-            <div class="panel-body" id="panel-body-sonderurlaub">
+        <div id="calendar-uebersicht"></div>
+        <div class="panel panel-default" style="margin-top: 15px">
+            <div class="panel-heading">Übersicht</div>
+            <div class="panel-body" id="panel-body-uebersicht">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%">Urlaub</th>
+                            <th style="width: 25%">Krankheit</th>
+                            <th style="width: 25%">Sonderurlaub</th>
+                            <th style="width: 25%">Resturlaub</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="uebersicht-urlaub"></td>
+                            <td id="uebersicht-krankheit"></td>
+                            <td id="uebersicht-sonderurlaub"></td>
+                            <td id="uebersicht-resturlaub"></td>
+                        </tr>
+                    </tbody>
+                </table>                            
             </div>
         </div>
     </div>

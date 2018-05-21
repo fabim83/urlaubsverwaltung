@@ -8,12 +8,25 @@ function getUebersicht() {
         dataType: 'json'
     })
         .done(function (data) {
-            $('#panel-body-urlaub').append('Urlaub');
-            $('#panel-body-krankheit').append('Krankheit');
-            $('#panel-body-sonderurlaub').append('Sonderurlaub');
+            rendereUebersicht(data);
         })
         .fail(function (jqXHR, textStatus, err) {
             console.log('Error: ', textStatus);
+        });
+};
+
+function getResturlaub() {
+    $.ajax({
+        type: 'GET',
+        url: '/users/resturlaub',
+        dataType: 'json'
+    })
+        .done(function (data) {
+            $('#uebersicht-resturlaub').text(data[0].urlaub_jahr);
+        })
+        .fail(function (jqXHR, textStatus, err) {
+            console.log('Error: ', textStatus);
+            $('#uebersicht-resturlaub').text(0);
         });
 };
 
@@ -85,7 +98,7 @@ function getKalendereintraegeZuAbteilung(abteilung) {
         dataType: 'json'
     })
         .done(function (data) {
-            rendereKalendereintraege(data);
+            rendereKalendereintraegeUebersichtMitarbeiter(data);
         })
         .fail(function (jqXHR, textStatus, err) {
             console.log('Error: ', textStatus);
@@ -117,6 +130,31 @@ function getMeldungStornieren() {
 /**
  * Rendern des Seiteninhalts
  */
+function rendereUebersicht(meldungen) {
+    var anzahlUrlaubstage = 0;
+    var anzahlKrankheitstage = 0;
+    var anzahlSonderurlaubstage = 0;
+
+    for (i = 0; i < meldungen.length; i++) {
+        var meldung = meldungen[i];
+
+        if(meldung.meldungsart == "Urlaub"){
+            anzahlUrlaubstage += getAnzahlWerktage(new Date(meldung.vom_dat), new Date(meldung.bis_dat));
+        }
+        if(meldung.meldungsart == "Krankheit"){
+            anzahlKrankheitstage += getAnzahlWerktage(new Date(meldung.vom_dat), new Date(meldung.bis_dat));
+        }
+        if(meldung.meldungsart == "Sonderurlaub"){
+            anzahlSonderurlaubstage += getAnzahlWerktage(new Date(meldung.vom_dat), new Date(meldung.bis_dat));
+        }
+
+        rendereKalendereintragUebersicht(meldung);
+    }
+
+    $('#uebersicht-urlaub').text(anzahlUrlaubstage);
+    $('#uebersicht-krankheit').text(anzahlKrankheitstage);
+    $('#uebersicht-sonderurlaub').text(anzahlSonderurlaubstage);
+};
 
 function rendereOffeneMeldungen(meldungen) {
     $('#accordion-offene-meldungen').empty();
@@ -303,7 +341,7 @@ function rendereAbteilungen(abteilungen) {
     }
 };
 
-function rendereKalendereintraege(eintraege) {
+function rendereKalendereintraegeUebersichtMitarbeiter(eintraege) {
     for (i = 0; i < eintraege.length; i++) {
         var eintrag = eintraege[i];
 
@@ -320,6 +358,21 @@ function rendereKalendereintraege(eintraege) {
             description: eintrag.halber_tag
         });
     }
+};
+
+function rendereKalendereintragUebersicht(eintrag){
+    // Workaround End-Datum Fullcalendar
+    var end = eintrag.bis_dat.split('-');
+    end[2] = Number(end[2]) + 1;
+    end = end.join('-');
+
+    $('#calendar-uebersicht').fullCalendar('renderEvent', {
+        title: eintrag.meldungsart,
+        start: eintrag.vom_dat,
+        end: end,
+        allDay: true,
+        description: eintrag.halber_tag
+    });
 };
 
 function rendereHistorie(meldungen, jahr) {
@@ -391,14 +444,14 @@ function rendereHistorie(meldungen, jahr) {
 };
 
 function rendereMeldungStornieren(meldungen) {
-    for(i = 0; i < meldungen.length; i++){
+    for (i = 0; i < meldungen.length; i++) {
         console.log(meldungen);
         var meldung = meldungen[i];
 
         var form = document.createElement("form");
         form.setAttribute("method", "POST");
         form.setAttribute("action", "/meldungen/meldung-stornieren");
-        $('#meldung-form').append(form);
+        $('#panel-body-meldung-stornieren').append(form);
 
         // Input-Feld Meldungs-Nr
         var input_meldungsnr = document.createElement("input");
@@ -434,4 +487,17 @@ function rendereMeldungStornieren(meldungen) {
         span_glyphicon.setAttribute("class", "glyphicon glyphicon-remove");
         button_submit.appendChild(span_glyphicon);
     }
+};
+
+function getAnzahlWerktage(startDate, endDate) {
+    var count = 0;
+    var curDate = startDate;
+    while (curDate <= endDate) {
+        var dayOfWeek = curDate.getDay();
+        if (!((dayOfWeek == 6) || (dayOfWeek == 0))) {
+            count++;
+        }
+        curDate.setDate(curDate.getDate() + 1);
+    }
+    return count;
 };
