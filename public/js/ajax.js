@@ -127,6 +127,14 @@ function getMeldungStornieren() {
         });
 }
 
+function sendeJahresuebersicht() {
+    $.ajax({
+        type: 'POST',
+        url: '/meldungen/jahresuebersicht',
+        dataType: 'json'
+    });
+}
+
 /**
  * Rendern des Seiteninhalts
  */

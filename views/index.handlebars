@@ -7,7 +7,15 @@
           header: {
             left: 'title',
             center: '',
-            right: 'prev,next'
+            right: 'mail prev,next'
+          },
+          customButtons: {
+              mail: {
+                  bootstrapGlyphicon: 'glyphicon glyphicon-envelope',
+                  click: function() {
+                      sendeJahresuebersicht();
+                  }
+              }
           }
         }).on('click', '.fc-prev-button,.fc-next-button', function(){
           getUebersicht();

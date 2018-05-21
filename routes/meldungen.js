@@ -207,6 +207,10 @@ router.post('/meldung-stornieren', isMitarbeiterAuthentifiziert, function (req, 
     });
 });
 
+router.post('/jahresuebersicht', isMitarbeiterAuthentifiziert, function (req, res) {
+
+});
+
 function sendeBenachrichtigungAnMitarbeiter(anrede, email, name, status_neu, meldungsart) {
     let transporter = nodemailer.createTransport({
         host: 'mail.gmx.net',
