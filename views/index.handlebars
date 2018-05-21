@@ -110,7 +110,7 @@
                 $('#divHalberTag').show();
             } else {
                 $('#labelHalberTag').hide();
-                $('#divHalberTag').hide()
+                $('#divHalberTag').hide();
             }
         });
 
@@ -120,9 +120,19 @@
                 $('#divHalberTag').show();
             } else {
                 $('#labelHalberTag').hide();
-                $('#divHalberTag').hide()
+                $('#divHalberTag').hide();
             }
         });
+
+        $('#meldungsart').on('change', function() {
+            if ($('#meldungsart').val() == "Krankheit"){
+                $('#labelBescheinigung').show();
+                $('#divBescheinigung').show();
+            } else {
+                $('#labelBescheinigung').hide();
+                $('#divBescheinigung').hide();
+            }
+        })
 
         getUebersicht();
         getResturlaub();
@@ -196,14 +206,14 @@
         <div class="panel panel-default" style="display: none" id="panel-neue-meldung">
             <div class="panel-heading" id="panel-heading-neue-meldung">Neue Meldung</div>
             <div class="panel-body" id="panel-body-neue-meldung">
-                <form method="POST" action="/meldungen/erfassen">
+                <form method="POST" action="/meldungen/erfassen" enctype="multipart/form-data">
                     <div class="container">
                         <div class="row">
                             <div class="col-lg-12"><label>Meldungart</label></div>
                         </div>
                         <div class="row">
                             <div class="col-lg-10">
-                                <select class="form-control" name="meldungsart">
+                                <select class="form-control" name="meldungsart" id="meldungsart">
                                     <option value="Urlaub">Urlaub</option>
                                     <option value="Krankheit">Krankheit</option>
                                     <option value="Sonderurlaub">Sonderurlaub</option>
@@ -245,6 +255,14 @@
                                 </select>
                             </div>
                             <div class="col-lg-2"></div>
+                        </div>
+                        <div class="row" style="display: none; margin-top: 15px;" id="labelBescheinigung">
+                            <div class="col-lg-12"><label>Dienstunfähigkeitsbescheinigung</label></div>
+                        </div>
+                        <div class="row" style="display: none" id="divBescheinigung">
+                            <div class="col-lg-12">
+                                <input type="file" accept=".pdf" name="bescheinigung" />
+                            </div>
                         </div>
                         <div class="row" style="margin-top: 15px">
                             <div class="col-lg-12">

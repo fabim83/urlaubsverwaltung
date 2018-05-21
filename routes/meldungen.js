@@ -36,8 +36,22 @@ router.post('/erfassen', isMitarbeiterAuthentifiziert, function (req, res) {
                             req.flash('error_msg', err.message);
                             res.redirect('/');
                         } else {
-                            req.flash('success_msg', 'Die Meldung wurde erfolgreich abgeschickt.');
-                            res.redirect('/');
+                            if (req.files && req.body.meldungsart == "Krankheit") {
+                                let bescheinigung = req.files.bescheinigung;
+                                var dateipfad = 'bescheinigungen/' + req.user[0].name + '_' + req.user[0].vorname + '_' + req.body.von_datum + '_' + req.body.bis_datum + '.pdf';
+                                bescheinigung.mv(dateipfad, (err) => {
+                                    if (err) {
+                                        req.flash('error_msg', err.message);
+                                        res.redirect('/');
+                                    } else {
+                                        req.flash('success_msg', 'Die Meldung wurde erfolgreich abgeschickt.');
+                                        res.redirect('/');
+                                    }
+                                });
+                            } else {
+                                req.flash('success_msg', 'Die Meldung wurde erfolgreich abgeschickt.');
+                                res.redirect('/');
+                            }
                         }
                     });
                 }

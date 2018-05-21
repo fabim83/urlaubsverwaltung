@@ -6,6 +6,7 @@ const exphbs = require('express-handlebars');
 const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
+const fileUpload = require('express-fileupload');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const mysql = require('mysql');
@@ -47,6 +48,9 @@ app.use(session({
 // Initialisierung Passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Initialisieren FileUpload
+app.use(fileUpload());
 
 // Express Validator
 app.use(expressValidator({
