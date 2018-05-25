@@ -34,29 +34,7 @@ router.post('/register', function (req, res) {
             errors: errors
         });
     } else {
-        var mitarbeiter = {
-            personalnummer: req.body.personalnummer,
-            name: req.body.name,
-            vorname: req.body.vorname,
-            anrede: req.body.anrede,
-            abteilung: req.body.abteilung,
-            email: req.body.email,
-            passwort: req.body.passwort
-        };
-
-        User.createMitarbeiter(mitarbeiter, (err, result) => {
-            if (err) {
-                if (err.errno == 1062) {
-                    req.flash('error_msg', 'Der Mitarbeiter ist schon registriert.');
-                } else {
-                    req.flash('error_msg', err.message);
-                }
-                res.redirect('register');
-            } else {
-                req.flash('success_msg', 'Sie sind registriert und können sich jetzt einloggen.');
-                res.redirect('/users/login');
-            }
-        });
+        erzeugeMitarbeiter(req, res);
     }
 });
 
@@ -137,6 +115,32 @@ router.get('/resturlaub', isMitarbeiterAuthentifiziert, (req, res) => {
         }
     });
 });
+
+function erzeugeMitarbeiter(req, res){
+    var mitarbeiter = {
+        personalnummer: req.body.personalnummer,
+        name: req.body.name,
+        vorname: req.body.vorname,
+        anrede: req.body.anrede,
+        abteilung: req.body.abteilung,
+        email: req.body.email,
+        passwort: req.body.passwort
+    };
+
+    User.createMitarbeiter(mitarbeiter, (err, result) => {
+        if (err) {
+            if (err.errno == 1062) {
+                req.flash('error_msg', 'Der Mitarbeiter ist schon registriert.');
+            } else {
+                req.flash('error_msg', err.message);
+            }
+            res.redirect('register');
+        } else {
+            req.flash('success_msg', 'Sie sind registriert und können sich jetzt einloggen.');
+            res.redirect('/users/login');
+        }
+    });
+};
 
 function isMitarbeiterAuthentifiziert(req, res, next) {
     if (req.isAuthenticated()) {
