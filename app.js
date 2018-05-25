@@ -9,14 +9,9 @@ const session = require('express-session');
 const fileUpload = require('express-fileupload');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const config = require('./config');
 const mysql = require('mysql');
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "urlaubsverwaltung_ws2015_webprogrammierung",
-    dateStrings: true
-});
+const db = mysql.createConnection(config.mysql);
 
 const routes = require('./routes/index');
 const users = require('./routes/users');

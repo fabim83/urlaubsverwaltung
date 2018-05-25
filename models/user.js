@@ -1,11 +1,6 @@
+const config = require('../config');
 const mysql = require('mysql');
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "urlaubsverwaltung_ws2015_webprogrammierung",
-    dateStrings: true
-});
+const db = mysql.createConnection(config.mysql);
 const bcrypt = require('bcryptjs');
 
 module.exports.createMitarbeiter = function (mitarbeiter, callback) {
