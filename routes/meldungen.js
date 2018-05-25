@@ -14,49 +14,7 @@ router.post('/erfassen', isMitarbeiterAuthentifiziert, function (req, res) {
             errors: errors
         });
     } else {
-        User.getUrlaubstageByPersonalnummer(req.user[0].personalnummer, (err, result) => {
-            if (err) {
-                req.flash('error_msg', err.message);
-                res.redirect('/');
-            } else {
-                if (req.body.meldungsart == "Urlaub" && result[0].urlaub_jahr < getAnzahlWerktage(new Date(req.body.von_datum), new Date(req.body.bis_datum))) {
-                    req.flash('error_msg', 'Sie haben nicht mehr genügend Resturlaub in diesem Jahr zur Verfügung.');
-                    res.redirect('/');
-                } else {
-                    var meldung = {
-                        personalnummer: req.user[0].personalnummer,
-                        meldungsart: req.body.meldungsart,
-                        vom_dat: req.body.von_datum,
-                        bis_dat: req.body.bis_datum,
-                        halber_tag: req.body.halber_tag
-                    };
-
-                    Meldung.createMeldung(meldung, (err, result) => {
-                        if (err) {
-                            req.flash('error_msg', err.message);
-                            res.redirect('/');
-                        } else {
-                            if (req.files.bescheinigung && req.body.meldungsart == "Krankheit") {
-                                let bescheinigung = req.files.bescheinigung;
-                                var dateipfad = 'bescheinigungen/' + req.user[0].name + '_' + req.user[0].vorname + '_' + req.body.von_datum + '_' + req.body.bis_datum + '.pdf';
-                                bescheinigung.mv(dateipfad, (err) => {
-                                    if (err) {
-                                        req.flash('error_msg', err.message);
-                                        res.redirect('/');
-                                    } else {
-                                        req.flash('success_msg', 'Die Meldung wurde erfolgreich abgeschickt.');
-                                        res.redirect('/');
-                                    }
-                                });
-                            } else {
-                                req.flash('success_msg', 'Die Meldung wurde erfolgreich abgeschickt.');
-                                res.redirect('/');
-                            }
-                        }
-                    });
-                }
-            }
-        });
+        validiereUndErzeugeMeldungFallsNotwendig(req, res);
     }
 });
 
@@ -210,6 +168,71 @@ router.post('/meldung-stornieren', isMitarbeiterAuthentifiziert, function (req, 
 router.post('/jahresuebersicht', isMitarbeiterAuthentifiziert, function (req, res) {
 
 });
+
+function validiereUndErzeugeMeldungFallsNotwendig(req, res) {
+    if (req.body.meldungsart == "Urlaub") {
+        User.getUrlaubstageByPersonalnummer(req.user[0].personalnummer, (err, result) => {
+            if (err) {
+                req.flash('error_msg', err.message);
+                res.redirect('/');
+            } else {
+                if (result[0].urlaub_jahr < getAnzahlWerktage(new Date(req.body.von_datum), new Date(req.body.bis_datum))) {
+                    req.flash('error_msg', 'Sie haben nicht mehr genügend Resturlaub in diesem Jahr zur Verfügung.');
+                    res.redirect('/');
+                } else {
+                    Meldung.getKollidierendeMeldungen(req.user[0].personalnummer, req.body.von_datum, req.body.bis_datum, (err, kolidierendeMeldungen) => {
+                        if (err) {
+                            req.flash('error_msg', err.message);
+                            res.redirect('/');
+                        } else if (kolidierendeMeldungen.length > 0) {
+                            req.flash('error_msg', 'Sie haben im angegebenen Zeitraum bereits Urlaub beantragt.');
+                            res.redirect('/');
+                        } else {
+                            erzeugeMeldung(req, res);
+                        }
+                    });
+                }
+            }
+        });
+    } else {
+        erzeugeMeldung(req, res);
+    }
+};
+
+function erzeugeMeldung(req, res) {
+    var meldung = {
+        personalnummer: req.user[0].personalnummer,
+        meldungsart: req.body.meldungsart,
+        vom_dat: req.body.von_datum,
+        bis_dat: req.body.bis_datum,
+        halber_tag: req.body.halber_tag
+    };
+
+    Meldung.createMeldung(meldung, (err, result) => {
+        if (err) {
+            req.flash('error_msg', err.message);
+            res.redirect('/');
+        } else {
+            if (req.files.bescheinigung && req.body.meldungsart == "Krankheit") {
+                // Hochladen der Arbeitsunfähigkeitsbescheinigung, falls ausgewählt
+                let bescheinigung = req.files.bescheinigung;
+                var dateipfad = 'bescheinigungen/' + req.user[0].name + '_' + req.user[0].vorname + '_' + req.body.von_datum + '_' + req.body.bis_datum + '.pdf';
+                bescheinigung.mv(dateipfad, (err) => {
+                    if (err) {
+                        req.flash('error_msg', err.message);
+                        res.redirect('/');
+                    } else {
+                        req.flash('success_msg', 'Die Meldung wurde erfolgreich abgeschickt.');
+                        res.redirect('/');
+                    }
+                });
+            } else {
+                req.flash('success_msg', 'Die Meldung wurde erfolgreich abgeschickt.');
+                res.redirect('/');
+            }
+        }
+    });
+};
 
 function sendeBenachrichtigungAnMitarbeiter(anrede, email, name, status_neu, meldungsart) {
     let transporter = nodemailer.createTransport({
