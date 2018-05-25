@@ -146,13 +146,13 @@ function rendereUebersicht(meldungen) {
     for (i = 0; i < meldungen.length; i++) {
         var meldung = meldungen[i];
 
-        if(meldung.meldungsart == "Urlaub"){
+        if (meldung.meldungsart == "Urlaub") {
             anzahlUrlaubstage += getAnzahlWerktage(new Date(meldung.vom_dat), new Date(meldung.bis_dat));
         }
-        if(meldung.meldungsart == "Krankheit"){
+        if (meldung.meldungsart == "Krankheit") {
             anzahlKrankheitstage += getAnzahlWerktage(new Date(meldung.vom_dat), new Date(meldung.bis_dat));
         }
-        if(meldung.meldungsart == "Sonderurlaub"){
+        if (meldung.meldungsart == "Sonderurlaub") {
             anzahlSonderurlaubstage += getAnzahlWerktage(new Date(meldung.vom_dat), new Date(meldung.bis_dat));
         }
 
@@ -356,6 +356,9 @@ function rendereKalendereintraegeUebersichtMitarbeiter(eintraege) {
         // Workaround End-Datum Fullcalendar
         var end = eintrag.bis_dat.split('-');
         end[2] = Number(end[2]) + 1;
+        if (Number(end[2]) < 10) {
+            end[2] = "0" + end[2];
+        }
         end = end.join('-');
 
         $('#calendar-uebersicht-mitarbeiter').fullCalendar('renderEvent', {
@@ -368,11 +371,16 @@ function rendereKalendereintraegeUebersichtMitarbeiter(eintraege) {
     }
 };
 
-function rendereKalendereintragUebersicht(eintrag){
+function rendereKalendereintragUebersicht(eintrag) {
     // Workaround End-Datum Fullcalendar
     var end = eintrag.bis_dat.split('-');
     end[2] = Number(end[2]) + 1;
+    if (Number(end[2]) < 10) {
+        end[2] = "0" + end[2];
+    }
     end = end.join('-');
+
+    console.log(end);
 
     $('#calendar-uebersicht').fullCalendar('renderEvent', {
         title: eintrag.meldungsart,
