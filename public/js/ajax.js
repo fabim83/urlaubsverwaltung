@@ -353,18 +353,10 @@ function rendereKalendereintraegeUebersichtMitarbeiter(eintraege) {
     for (i = 0; i < eintraege.length; i++) {
         var eintrag = eintraege[i];
 
-        // Workaround End-Datum Fullcalendar
-        var end = eintrag.bis_dat.split('-');
-        end[2] = Number(end[2]) + 1;
-        if (Number(end[2]) < 10) {
-            end[2] = "0" + end[2];
-        }
-        end = end.join('-');
-
         $('#calendar-uebersicht-mitarbeiter').fullCalendar('renderEvent', {
             title: eintrag.meldungsart + " " + eintrag.vorname + " " + eintrag.name,
             start: eintrag.vom_dat,
-            end: end,
+            end: workaroundEndDateEventFullcalendar(eintrag.bis_dat),
             allDay: true,
             description: eintrag.halber_tag
         });
@@ -372,20 +364,10 @@ function rendereKalendereintraegeUebersichtMitarbeiter(eintraege) {
 };
 
 function rendereKalendereintragUebersicht(eintrag) {
-    // Workaround End-Datum Fullcalendar
-    var end = eintrag.bis_dat.split('-');
-    end[2] = Number(end[2]) + 1;
-    if (Number(end[2]) < 10) {
-        end[2] = "0" + end[2];
-    }
-    end = end.join('-');
-
-    console.log(end);
-
     $('#calendar-uebersicht').fullCalendar('renderEvent', {
         title: eintrag.meldungsart,
         start: eintrag.vom_dat,
-        end: end,
+        end: workaroundEndDateEventFullcalendar(eintrag.bis_dat),
         allDay: true,
         description: eintrag.halber_tag
     });
@@ -461,7 +443,6 @@ function rendereHistorie(meldungen, jahr) {
 
 function rendereMeldungStornieren(meldungen) {
     for (i = 0; i < meldungen.length; i++) {
-        console.log(meldungen);
         var meldung = meldungen[i];
 
         var form = document.createElement("form");
@@ -485,7 +466,6 @@ function rendereMeldungStornieren(meldungen) {
         input.setAttribute("class", "form-control");
         var input_value_halber_tag = meldung.halber_tag ? " (" + meldung.halber_tag + ")" : "";
         var input_value = meldung.meldungsart + " vom " + meldung.vom_dat + " bis " + meldung.bis_dat + input_value_halber_tag;
-        console.log(input_value);
         input.setAttribute("value", input_value);
         input.disabled = true;
         div_input_group.appendChild(input);
@@ -516,4 +496,41 @@ function getAnzahlWerktage(startDate, endDate) {
         curDate.setDate(curDate.getDate() + 1);
     }
     return count;
+};
+
+function workaroundEndDateEventFullcalendar(date) {
+    // Workaround End-Datum Fullcalendar
+    var end = date.split('-');
+    var lastDayOfMonth = isLetzterTagDesMonats(end[1], end[2]);
+    if (lastDayOfMonth) {
+        end[1] = Number(end[1]) + 1;
+        if (Number(end[1]) < 10) {
+            end[1] = "0" + end[1];
+        }
+        end[2] = "01";
+    } else {
+        end[2] = Number(end[2]) + 1;
+        if (Number(end[2]) < 10) {
+            end[2] = "0" + end[2];
+        }
+    }
+    end = end.join('-');
+
+    return end;
+};
+
+function isLetzterTagDesMonats(monat, tag) {
+    if ((monat == "01" || monat == "03" || monat == "05" || monat == "07" || monat == "08" || monat == "10" || monat == "12") && tag == "31") {
+        return true;
+    }
+
+    if ((monat == "04" || monat == "06" || monat == "09" || monat == "11") && tag == "30") {
+        return true;
+    }
+
+    if (monat == "02" && (tag == "28" || tag == "29")) {
+        return true;
+    }
+
+    return false;
 };

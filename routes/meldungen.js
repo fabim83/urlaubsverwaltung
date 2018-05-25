@@ -47,53 +47,10 @@ router.post('/status-aktualisieren', isMitarbeiterAuthentifiziert, isVerwalter, 
             req.flash('error_msg', err.message);
             res.redirect('/');
         } else {
-            if (req.body.meldungsart == "Urlaub") {
-                Meldung.getMeldungByID(req.body.meldung_nr, (err, result) => {
-                    if (err) {
-                        req.flash('error_msg', err.message);
-                        res.redirect('/');
-                    } else {
-                        var meldung = result[0];
-                        var anzahlTage = getAnzahlWerktage(new Date(meldung.vom_dat), new Date(meldung.bis_dat));
-                        User.reduziereUrlaubstageByPersonalnummer(meldung.personalnummer, anzahlTage, (err, result) => {
-                            if (err) {
-                                req.flash('error_msg', err.message);
-                                res.redirect('/');
-                            } else {
-                                sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status_neu, req.body.meldungsart);
-                                req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
-                                res.redirect('/');
-                            }
-                        });
-                    }
-                });
-            } else if (req.body.meldungsart == "Krankheit") {
-                Meldung.getMeldungByID(req.body.meldung_nr, (err, meldungen) => {
-                    if (err) {
-                        req.flash('error_msg', err.message);
-                        res.redirect('/');
-                    } else {
-                        var meldung = meldungen[0];
-                        Meldung.getKollidierendeMeldungen(meldung.personalnummer, meldung.vom_dat, meldung.bis_dat, (err, result) => {
-                            if (err) {
-                                req.flash('error_msg', err.message);
-                                res.redirect('/');
-                            } else {
-                                var anzahlTage = ermittleAnzahlGutzuschreibendeTage(new Date(meldung.vom_dat), new Date(meldung.bis_dat), new Date(result[0].vom_dat), new Date(result[0].bis_dat));
-                                User.erhoeheUrlaubstageByPersonalnummer(meldung.personalnummer, anzahlTage, (err, result) => {
-                                    if (err) {
-                                        req.flash('error_msg', err.message);
-                                        res.redirect('/');
-                                    } else {
-                                        sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status_neu, req.body.meldungsart);
-                                        req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
-                                        res.redirect('/');
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
+            if (req.body.meldungsart == "Urlaub" && status_neu == "Genehmigt") {
+                behandleUrlaubsMeldungGehnemigt(req, res, status_neu);
+            } else if (req.body.meldungsart == "Krankheit" && status_neu == "Genehmigt") {
+                behandleKrankMeldungGenehmigt(req, res, status_neu);
             } else {
                 sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status_neu, req.body.meldungsart);
                 req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
@@ -150,15 +107,7 @@ router.post('/meldung-stornieren', isMitarbeiterAuthentifiziert, function (req, 
                     req.flash('error_msg', err.message);
                     res.redirect('/');
                 } else {
-                    Meldung.removeMeldungByID(req.body.meldung_nr, (err, result) => {
-                        if (err) {
-                            req.flash('error_msg', err.message);
-                            res.redirect('/');
-                        } else {
-                            req.flash('success_msg', 'Die Meldung wurde erfolgreich storniert.');
-                            res.redirect('/');
-                        }
-                    });
+                    entferneStornierteMeldung(req, res);
                 }
             });
         }
@@ -230,6 +179,69 @@ function erzeugeMeldung(req, res) {
                 req.flash('success_msg', 'Die Meldung wurde erfolgreich abgeschickt.');
                 res.redirect('/');
             }
+        }
+    });
+};
+
+function entferneStornierteMeldung(req, res) {
+    Meldung.removeMeldungByID(req.body.meldung_nr, (err, result) => {
+        if (err) {
+            req.flash('error_msg', err.message);
+            res.redirect('/');
+        } else {
+            req.flash('success_msg', 'Die Meldung wurde erfolgreich storniert.');
+            res.redirect('/');
+        }
+    });
+};
+
+function behandleUrlaubsMeldungGehnemigt(req, res, status) {
+    Meldung.getMeldungByID(req.body.meldung_nr, (err, result) => {
+        if (err) {
+            req.flash('error_msg', err.message);
+            res.redirect('/');
+        } else {
+            var meldung = result[0];
+            var anzahlTage = getAnzahlWerktage(new Date(meldung.vom_dat), new Date(meldung.bis_dat));
+            User.reduziereUrlaubstageByPersonalnummer(meldung.personalnummer, anzahlTage, (err, result) => {
+                if (err) {
+                    req.flash('error_msg', err.message);
+                    res.redirect('/');
+                } else {
+                    sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status, req.body.meldungsart);
+                    req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
+                    res.redirect('/');
+                }
+            });
+        }
+    });
+};
+
+function behandleKrankMeldungGenehmigt(req, res, status) {
+    Meldung.getMeldungByID(req.body.meldung_nr, (err, meldungen) => {
+        if (err) {
+            req.flash('error_msg', err.message);
+            res.redirect('/');
+        } else {
+            var meldung = meldungen[0];
+            Meldung.getKollidierendeMeldungen(meldung.personalnummer, meldung.vom_dat, meldung.bis_dat, (err, result) => {
+                if (err) {
+                    req.flash('error_msg', err.message);
+                    res.redirect('/');
+                } else {
+                    var anzahlTage = ermittleAnzahlGutzuschreibendeTage(new Date(meldung.vom_dat), new Date(meldung.bis_dat), new Date(result[0].vom_dat), new Date(result[0].bis_dat));
+                    User.erhoeheUrlaubstageByPersonalnummer(meldung.personalnummer, anzahlTage, (err, result) => {
+                        if (err) {
+                            req.flash('error_msg', err.message);
+                            res.redirect('/');
+                        } else {
+                            sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status, req.body.meldungsart);
+                            req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
+                            res.redirect('/');
+                        }
+                    });
+                }
+            });
         }
     });
 };
