@@ -50,14 +50,7 @@ module.exports.getMeldungenByMitarbeiterUndJahr = function (personalnummer, jahr
             if (err) {
                 callback(err, null);
             } else {
-                sql = "SELECT * FROM UV_MELDUNGSART";
-                db.query(sql, (err, meldungsarten) => {
-                    if (err) {
-                        callback(err, null);
-                    } else {
-                        callback(null, ersetzteSchluesselDurchKlartext(result, meldungsarten));
-                    }
-                });
+                ersetzteSchluesselDurchKlartext(result, callback);
             }
         });
     });
@@ -71,14 +64,7 @@ module.exports.getMeldungenByStatus = function (status, callback) {
             if (err) {
                 callback(err, null);
             } else {
-                sql = "SELECT * FROM UV_MELDUNGSART";
-                db.query(sql, (err, meldungsarten) => {
-                    if (err) {
-                        callback(err, null);
-                    } else {
-                        callback(null, ersetzteSchluesselDurchKlartext(result, meldungsarten));
-                    }
-                });
+                ersetzteSchluesselDurchKlartext(result, callback);
             }
         });
     });
@@ -100,14 +86,7 @@ module.exports.getMeldungenByAbteilung = function (abteilung, callback) {
             if (err) {
                 callback(err, null);
             } else {
-                sql = "SELECT * FROM UV_MELDUNGSART";
-                db.query(sql, (err, meldungsarten) => {
-                    if (err) {
-                        callback(err, null);
-                    } else {
-                        callback(null, ersetzteSchluesselDurchKlartext(result, meldungsarten));
-                    }
-                });
+                ersetzteSchluesselDurchKlartext(result, callback);
             }
         });
     });
@@ -119,21 +98,29 @@ module.exports.getKollidierendeMeldungen = function (personalnummer, vom_dat, bi
         var values = [personalnummer, vom_dat, vom_dat, bis_dat, bis_dat, vom_dat, bis_dat];
         db.query(sql, values, callback);
     });
-}
+};
 
-function ersetzteSchluesselDurchKlartext(meldungen, meldungsarten) {
-    for (i = 0; i < meldungen.length; i++) {
-        for (j = 0; j < meldungsarten.length; j++) {
-            if (meldungen[i].meldungsart == meldungsarten[j].meldungsart_nr) {
-                meldungen[i].meldungsart = meldungsarten[j].meldungsart;
+function ersetzteSchluesselDurchKlartext(meldungen, callback) {
+    var sql = "SELECT * FROM UV_MELDUNGSART";
+    db.query(sql, (err, meldungsarten) => {
+        if (err) {
+            callback(err, null);
+        } else {
+            for (i = 0; i < meldungen.length; i++) {
+                for (j = 0; j < meldungsarten.length; j++) {
+                    if (meldungen[i].meldungsart == meldungsarten[j].meldungsart_nr) {
+                        meldungen[i].meldungsart = meldungsarten[j].meldungsart;
+                    }
+                }
+        
+                meldungen[i].halber_tag = meldungen[i].halber_tag == "vorm" ? "Vormittags" : meldungen[i].halber_tag == "nachm" ? "Nachmittags" : "";
+        
             }
+
+            callback(null, meldungen);
         }
-
-        meldungen[i].halber_tag = meldungen[i].halber_tag == "vorm" ? "Vormittags" : meldungen[i].halber_tag == "nachm" ? "Nachmittags" : "";
-
-    }
-    return meldungen;
-}
+    });
+};
 
 
 
