@@ -3,6 +3,7 @@ const router = express.Router();
 const Meldung = require('../models/meldung');
 const User = require('../models/user');
 const nodemailer = require('nodemailer');
+const MailUtil = require('../utils/mail');
 
 router.post('/erfassen', isMitarbeiterAuthentifiziert, function (req, res) {
     req.checkBody('von_datum', 'Der Zeitraum muss angegeben werden.').notEmpty();
@@ -52,7 +53,7 @@ router.post('/status-aktualisieren', isMitarbeiterAuthentifiziert, isVerwalter, 
             } else if (req.body.meldungsart == "Krankheit" && status_neu == "Genehmigt") {
                 behandleKrankMeldungGenehmigt(req, res, status_neu);
             } else {
-                sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status_neu, req.body.meldungsart);
+                MailUtil.sendeBenachrichtigungMeldungsstatus(req.body.anrede, req.body.email, req.body.name, status_neu, req.body.meldungsart);
                 req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
                 res.redirect('/');
             }
@@ -208,7 +209,7 @@ function behandleUrlaubsMeldungGehnemigt(req, res, status) {
                     req.flash('error_msg', err.message);
                     res.redirect('/');
                 } else {
-                    sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status, req.body.meldungsart);
+                    MailUtil.sendeBenachrichtigungMeldungsstatus(req.body.anrede, req.body.email, req.body.name, status, req.body.meldungsart);
                     req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
                     res.redirect('/');
                 }
@@ -235,7 +236,7 @@ function behandleKrankMeldungGenehmigt(req, res, status) {
                             req.flash('error_msg', err.message);
                             res.redirect('/');
                         } else {
-                            sendeBenachrichtigungAnMitarbeiter(req.body.anrede, req.body.email, req.body.name, status, req.body.meldungsart);
+                            MailUtil.sendeBenachrichtigungMeldungsstatus(req.body.anrede, req.body.email, req.body.name, status, req.body.meldungsart);
                             req.flash('success_msg', 'Der Meldungsstatus wurde erfolgreich aktualisiert.');
                             res.redirect('/');
                         }
