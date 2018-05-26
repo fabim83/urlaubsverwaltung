@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const VerificationUtil = require('../utils/verification');
 
-// Get Homepage
+/**
+ * Routes Index
+ */
 router.get('/', VerificationUtil.isMitarbeiterAuthentifiziert, function (req, res) {
     var anrede = req.user[0].geschlecht  == 'w' ? 'Frau' : 'Herr';
     res.render('index', {

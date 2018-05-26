@@ -6,17 +6,17 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const LOGIN_FEHLER_MESSAGE = 'Login-Daten nicht korrekt.';
 
-// Login
+/**
+ * Routes Users
+ */
 router.get('/login', function (req, res) {
     res.render('login');
 });
 
-// Registrieren Formular
 router.get('/register', function (req, res) {
     res.render('register');
 });
 
-// Registrieren Mitarbeiter
 router.post('/register', function (req, res) {
     req.checkBody('personalnummer', 'Personalnummer muss dem Schema PN00000 entsprechen.').matches('^[P][N][0-9][0-9][0-9][0-9][0-9]$');
     req.checkBody('anrede', 'Anrede muss ausgewählt sein.').notEmpty();
@@ -37,35 +37,6 @@ router.post('/register', function (req, res) {
     } else {
         erzeugeMitarbeiter(req, res);
     }
-});
-
-passport.use(new LocalStrategy(
-    function(personalnummer, passwort, done) {
-        User.getMitarbeiterByPersonalnummer(personalnummer, (err, mitarbeiter) => {
-            if(err) throw err;
-            if(!mitarbeiter[0]){
-                return done(null, false, {message: LOGIN_FEHLER_MESSAGE});
-            }
-
-            User.comparePasswort(passwort, mitarbeiter[0].passwort, (err, isMatch) => {
-                if(err) throw err;
-                if(isMatch){
-                    return done(null, mitarbeiter);
-                }else{
-                    return done(null, false, {message: LOGIN_FEHLER_MESSAGE});
-                }
-            })
-        });
-    }));
-
-passport.serializeUser((mitarbeiter, done) => {
-  done(null, mitarbeiter[0].personalnummer);
-});
-
-passport.deserializeUser((personalnummer, done) => {
-  User.getMitarbeiterByPersonalnummer(personalnummer, (err, mitarbeiter) => {
-    done(err, mitarbeiter);
-  });
 });
 
 router.post('/login',
@@ -117,6 +88,41 @@ router.get('/resturlaub', VerificationUtil.isMitarbeiterAuthentifiziert, (req, r
     });
 });
 
+/**
+ * Middleware Passport
+ */
+passport.use(new LocalStrategy(
+    function(personalnummer, passwort, done) {
+        User.getMitarbeiterByPersonalnummer(personalnummer, (err, mitarbeiter) => {
+            if(err) throw err;
+            if(!mitarbeiter[0]){
+                return done(null, false, {message: LOGIN_FEHLER_MESSAGE});
+            }
+
+            User.comparePasswort(passwort, mitarbeiter[0].passwort, (err, isMatch) => {
+                if(err) throw err;
+                if(isMatch){
+                    return done(null, mitarbeiter);
+                }else{
+                    return done(null, false, {message: LOGIN_FEHLER_MESSAGE});
+                }
+            })
+        });
+    }));
+
+passport.serializeUser((mitarbeiter, done) => {
+  done(null, mitarbeiter[0].personalnummer);
+});
+
+passport.deserializeUser((personalnummer, done) => {
+  User.getMitarbeiterByPersonalnummer(personalnummer, (err, mitarbeiter) => {
+    done(err, mitarbeiter);
+  });
+});
+
+/**
+ * Sonstige Methoden Users
+ */
 function erzeugeMitarbeiter(req, res){
     var mitarbeiter = {
         personalnummer: req.body.personalnummer,

@@ -5,6 +5,9 @@ const User = require('../models/user');
 const MailUtil = require('../utils/mail');
 const VerificationUtil = require('../utils/verification');
 
+/**
+ * Routes Meldungen
+ */
 router.post('/erfassen', VerificationUtil.isMitarbeiterAuthentifiziert, function (req, res) {
     req.checkBody('von_datum', 'Der Zeitraum muss angegeben werden.').notEmpty();
     req.checkBody('bis_datum', 'Der Zeitraum muss angegeben werden.').notEmpty();
@@ -119,6 +122,9 @@ router.post('/jahresuebersicht', VerificationUtil.isMitarbeiterAuthentifiziert, 
 
 });
 
+/**
+ * Sonstige Methoden Meldungen
+ */
 function validiereUndErzeugeMeldungFallsNotwendig(req, res) {
     if (req.body.meldungsart == "Urlaub") {
         User.getUrlaubstageByPersonalnummer(req.user[0].personalnummer, (err, result) => {

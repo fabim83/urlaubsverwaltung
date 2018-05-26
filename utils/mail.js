@@ -55,3 +55,7 @@ module.exports.sendeBenachrichtigungMeldungsstatus = function(anrede, email, nam
         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
     });
 };
+
+module.exports.sendeJahresuebersicht = function(){
+
+};
