@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const VerificationUtil = require('../utils/verification');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const LOGIN_FEHLER_MESSAGE = 'Login-Daten nicht korrekt.';
@@ -83,7 +84,7 @@ router.get('/logout', (req, res) =>{
     res.redirect('/users/login');
 });
 
-router.get('/mitarbeiter', isMitarbeiterAuthentifiziert, isVerwalter, (req, res) => {
+router.get('/mitarbeiter', VerificationUtil.isMitarbeiterAuthentifiziert, VerificationUtil.isVerwalter, (req, res) => {
     User.getMitarbeiterByPersonalnummer(req.query.personalnummer, (err, result) => {
         if (err) {
             req.flash('error_msg', err.message);
@@ -94,7 +95,7 @@ router.get('/mitarbeiter', isMitarbeiterAuthentifiziert, isVerwalter, (req, res)
     });
 });
 
-router.get('/abteilungen', isMitarbeiterAuthentifiziert, isVerwalter, (req, res) => {
+router.get('/abteilungen', VerificationUtil.isMitarbeiterAuthentifiziert, VerificationUtil.isVerwalter, (req, res) => {
     User.getAbteilungen((err, result) => {
         if (err) {
             req.flash('error_msg', err.message);
@@ -105,7 +106,7 @@ router.get('/abteilungen', isMitarbeiterAuthentifiziert, isVerwalter, (req, res)
     });
 });
 
-router.get('/resturlaub', isMitarbeiterAuthentifiziert, (req, res) => {
+router.get('/resturlaub', VerificationUtil.isMitarbeiterAuthentifiziert, (req, res) => {
     User.getUrlaubstageByPersonalnummer(req.user[0].personalnummer, (err, result) => {
         if (err) {
             req.flash('error_msg', err.message);
@@ -140,22 +141,6 @@ function erzeugeMitarbeiter(req, res){
             res.redirect('/users/login');
         }
     });
-};
-
-function isMitarbeiterAuthentifiziert(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    } else {
-        res.redirect('/users/login');
-    }
-};
-
-function isVerwalter(req, res, next) {
-    if(req.user[0].kz_verwalter == 1){
-        return next();
-    } else {
-        res.redirect('/users/login');
-    }
 };
 
 module.exports = router;
