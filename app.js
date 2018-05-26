@@ -84,6 +84,7 @@ app.use('/meldungen', meldungen);
 // Port setzten
 app.set('port', (process.env.PORT || 3000));
 
+// Server auf Port starten
 app.listen(app.get('port'), function () {
     console.log('Server auf Port ' + app.get('port') + ' gestartet.')
 });
