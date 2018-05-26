@@ -28,13 +28,13 @@
     "express-session": "*",
     "express-validator": "*",
     "fullcalendar": "^3.9.0",
-    "jquery": "^3.3.1",
     "moment": "^2.22.1",
     "mysql": "^2.15.0",
     "nodemailer": "^4.6.4",
     "passport": "*",
     "passport-http": "*",
     "passport-local": "*",
+    "pdfkit": "^0.8.3",
     "popper.js": "^1.14.3"
   }
 }
