@@ -18,14 +18,6 @@ module.exports.createMeldung = function (meldung, callback) {
     });
 };
 
-module.exports.getMeldungenZuMitarbeiter = function (personalnummer, callback) {
-    db.connect((err) => {
-        var sql = "SELECT * from UV_MELDUNG WHERE PERSONALNUMMER = ?";
-        var values = [personalnummer];
-        db.query(sql, values, callback);
-    });
-};
-
 module.exports.getMeldungByID = function (meldung_nr, callback) {
     db.connect((err) => {
         var sql = "SELECT * from UV_MELDUNG WHERE MELDUNG_NR = ?";
@@ -42,7 +34,7 @@ module.exports.removeMeldungByID = function (meldung_nr, callback) {
     });
 };
 
-module.exports.getMeldungenByMitarbeiterUndJahr = function (personalnummer, jahr, callback) {
+module.exports.getMeldungenByPersonalnummerUndJahr = function (personalnummer, jahr, callback) {
     db.connect((err) => {
         var sql = "SELECT * from UV_MELDUNG WHERE PERSONALNUMMER = ? AND YEAR(VOM_DAT) = ? AND MELDUNGSSTATUS = 'Genehmigt' ORDER BY VOM_DAT";
         var values = [personalnummer, jahr];
@@ -97,6 +89,20 @@ module.exports.getKollidierendeMeldungen = function (personalnummer, vom_dat, bi
         var sql = "SELECT x.vom_dat, x.bis_dat FROM uv_meldung x JOIN uv_meldungsart y ON x.meldungsart = y.meldungsart_nr WHERE x.personalnummer = ? AND y.meldungsart = 'Urlaub' AND x.meldungsstatus = 'Genehmigt' AND ((x.vom_dat <= ? AND x.bis_dat >= ?) OR (x.vom_dat <= ? AND x.bis_dat >= ?) OR (x.vom_dat > ? AND x.bis_dat < ?))";
         var values = [personalnummer, vom_dat, vom_dat, bis_dat, bis_dat, vom_dat, bis_dat];
         db.query(sql, values, callback);
+    });
+};
+
+module.exports.getStornierbareMeldungen = function (personalnummer, callback) {
+    db.connect((err) => {
+        var sql = "SELECT * from UV_MELDUNG x JOIN UV_MELDUNGSART y ON x.MELDUNGSART = y.MELDUNGSART_NR WHERE x.PERSONALNUMMER = ? AND x.VOM_DAT > NOW() AND x.MELDUNGSSTATUS = 'Genehmigt' AND y.MELDUNGSART = 'Urlaub' ORDER BY x.VOM_DAT";
+        var values = [personalnummer];
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                callback(err, null);
+            } else {
+                ersetzteSchluesselDurchKlartext(result, callback);
+            }
+        });
     });
 };
 

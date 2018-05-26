@@ -19,7 +19,7 @@ router.post('/erfassen', isMitarbeiterAuthentifiziert, function (req, res) {
 });
 
 router.post('/uebersicht', isMitarbeiterAuthentifiziert, function (req, res) {
-    Meldung.getMeldungenByMitarbeiterUndJahr(req.user[0].personalnummer, new Date().getFullYear(), (err, result) => {
+    Meldung.getMeldungenByPersonalnummerUndJahr(req.user[0].personalnummer, new Date().getFullYear(), (err, result) => {
         if (err) {
             req.flash('error_msg', err.message);
             res.redirect('/');
@@ -73,7 +73,7 @@ router.get('/meldungen-fuer-abteilung', isMitarbeiterAuthentifiziert, isVerwalte
 });
 
 router.get('/historie', isMitarbeiterAuthentifiziert, function (req, res) {
-    Meldung.getMeldungenByMitarbeiterUndJahr(req.user[0].personalnummer, req.query.jahr, (err, result) => {
+    Meldung.getMeldungenByPersonalnummerUndJahr(req.user[0].personalnummer, req.query.jahr, (err, result) => {
         if (err) {
             req.flash('error_msg', err.message);
             res.redirect('/');
@@ -84,7 +84,7 @@ router.get('/historie', isMitarbeiterAuthentifiziert, function (req, res) {
 });
 
 router.get('/meldung-stornieren', isMitarbeiterAuthentifiziert, function (req, res) {
-    Meldung.getMeldungenByMitarbeiterUndJahr(req.user[0].personalnummer, new Date().getFullYear(), (err, result) => {
+    Meldung.getStornierbareMeldungen(req.user[0].personalnummer, (err, result) => {
         if (err) {
             req.flash('error_msg', err.message);
             res.redirect('/');
