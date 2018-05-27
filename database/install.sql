@@ -60,7 +60,7 @@ foreign key (abteilung) references uv_abteilung(abteilung_nr) on delete set null
 
 LOCK TABLES uv_mitarbeiter WRITE;
 /*!40000 ALTER TABLE uv_mitarbeiter DISABLE KEYS */;
-INSERT INTO uv_mitarbeiter VALUES ('PN00001','Metten','Fabian','m', '1', 'fabian.metten@gmx.de','$2y$10$pO9s0V/kTI0dsgLrJmLMI.w1bNXiuS1QlcCxb12gAWUR4KVuEed7q',true, 30),('PN00002','Müller','Nico','m', '2', 'fabian.metten@gmx.de','$2y$10$/njd/OPijZVhGmFGKqaQhuxrPUw8ySbSHgGQyf50vsLse1k2rMyIy', false, 30);
+INSERT INTO uv_mitarbeiter VALUES ('PN00001','Metten','Fabian','m', '1', 'fabian.metten@gmx.de','$2y$10$pO9s0V/kTI0dsgLrJmLMI.w1bNXiuS1QlcCxb12gAWUR4KVuEed7q',true, 19),('PN00002','Müller','Nico','m', '2', 'fabian.metten@gmx.de','$2y$10$/njd/OPijZVhGmFGKqaQhuxrPUw8ySbSHgGQyf50vsLse1k2rMyIy', false, 25);
 /*!40000 ALTER TABLE uv_mitarbeiter ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -111,8 +111,15 @@ foreign key (personalnummer) references uv_mitarbeiter (personalnummer) on delet
 
 LOCK TABLES uv_meldung WRITE;
 /*!40000 ALTER TABLE uv_meldung DISABLE KEYS */;
+INSERT INTO uv_meldung (personalnummer, meldungsart, meldungsstatus, vom_dat, bis_dat, halber_tag) VALUES ('PN00001', 2, 'Genehmigt', '2017-09-18', '2017-09-22', '');
+INSERT INTO uv_meldung (personalnummer, meldungsart, meldungsstatus, vom_dat, bis_dat, halber_tag) VALUES ('PN00001', 1, 'Genehmigt', '2017-11-20', '2017-11-29', '');
+INSERT INTO uv_meldung (personalnummer, meldungsart, meldungsstatus, vom_dat, bis_dat, halber_tag) VALUES ('PN00001', 1, 'Genehmigt', '2017-12-11''2017-12-11', '2017-12-11', 'nachm');
+INSERT INTO uv_meldung (personalnummer, meldungsart, meldungsstatus, vom_dat, bis_dat, halber_tag) VALUES ('PN00002', 1, 'Genehmigt', '2018-01-01', '2018-01-05', '');
+INSERT INTO uv_meldung (personalnummer, meldungsart, meldungsstatus, vom_dat, bis_dat, halber_tag) VALUES ('PN00002', 3, 'Genehmigt', '2018-05-21', '2018-05-24', '');
+INSERT INTO uv_meldung (personalnummer, meldungsart, meldungsstatus, vom_dat, bis_dat, halber_tag) VALUES ('PN00001', 1, 'Genehmigt', '2018-04-23', '2018-04-25', '');
 INSERT INTO uv_meldung (personalnummer, meldungsart, meldungsstatus, vom_dat, bis_dat, halber_tag) VALUES ('PN00002', 1, 'Offen', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY), '');
 INSERT INTO uv_meldung (personalnummer, meldungsart, meldungsstatus, vom_dat, bis_dat, halber_tag) VALUES ('PN00001', 1, 'Genehmigt', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY), '');
+INSERT INTO uv_meldung (personalnummer, meldungsart, meldungsstatus, vom_dat, bis_dat, halber_tag) VALUES ('PN00001', 1, 'Genehmigt', DATE_ADD(CURDATE(), INTERVAL 14 DAY), DATE_ADD(CURDATE(), INTERVAL 17 DAY), '');
 /*!40000 ALTER TABLE uv_meldung ENABLE KEYS */;
 UNLOCK TABLES;
 
