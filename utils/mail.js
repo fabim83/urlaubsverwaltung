@@ -1,18 +1,7 @@
 const nodemailer = require('nodemailer');
 
-module.exports.sendeBenachrichtigungMeldungsstatus = function(anrede, email, name, status_neu, meldungsart) {
-    let transporter = nodemailer.createTransport({
-        host: 'mail.gmx.net',
-        port: 587,
-        secure: false,
-        auth: {
-            user: 'urlaubsverwaltung@gmx.de',
-            pass: 'Test1234'
-        },
-        tls: {
-            rejectUnauthorized: false
-        }
-    });
+module.exports.sendeBenachrichtigungMeldungsstatus = function (anrede, email, name, status_neu, meldungsart) {
+    let transporter = erzeugeTransport();
 
     var subject = "Ihr Antrag auf ";
     subject += meldungsart;
@@ -56,6 +45,62 @@ module.exports.sendeBenachrichtigungMeldungsstatus = function(anrede, email, nam
     });
 };
 
-module.exports.sendeJahresuebersicht = function(){
+module.exports.sendeJahresuebersicht = function (req, res, pfad) {
+    let transporter = erzeugeTransport();
 
+    var output = null;
+    if (req.user[0].geschlecht == 'w') {
+        output = `
+            Sehr geehrte Frau ${req.user[0].name},
+            <br/><br/>
+            im Anhang finden Sie die angeforderte Jahresübersicht.
+            <br/><br/>
+            Mit freundlichen Grüßen<br/>
+            Ihre Urlaubsverwaltung
+        `;
+    } else {
+        output = `
+            Sehr geehrter Herr ${req.user[0].name},
+            <br/><br/>
+            im Anhang finden Sie die angeforderte Jahresübersicht.
+            <br/><br/>
+            Mit freundlichen Grüßen<br/>
+            Ihre Urlaubsverwaltung
+        `;
+    }
+
+    let mailOptions = {
+        from: '"Urlaubsverwaltung" <urlaubsverwaltung@gmx.de>',
+        to: req.user[0].email,
+        subject: 'Jahresübersicht',
+        html: output,
+        attachments: [{
+            filename: 'Jahresuebersicht_' + req.user[0].name + '_' + new Date().getFullYear() + '.pdf',
+            path: pfad,
+            contentType: 'application/pdf'
+        }]
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            res.send(error);
+        } else {
+            res.send(info);
+        }
+    });
+};
+
+function erzeugeTransport() {
+    return nodemailer.createTransport({
+        host: 'mail.gmx.net',
+        port: 587,
+        secure: false,
+        auth: {
+            user: 'urlaubsverwaltung@gmx.de',
+            pass: 'Test1234'
+        },
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
 };
