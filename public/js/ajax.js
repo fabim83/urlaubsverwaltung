@@ -132,7 +132,21 @@ function sendeJahresuebersicht() {
         type: 'POST',
         url: '/meldungen/jahresuebersicht',
         dataType: 'json'
-    });
+    })
+        .done(function (data) {
+            if (data.responseCode) {
+                $('#layout-meldungen').empty();
+                $('#layout-meldungen').append("<div class=\"alert alert-danger\">Beim Senden der Jahresübersicht ist ein Fehler aufgetreten. Bitte versuchen Sie es später nocheinmal.</div>");
+            } else {
+                $('#layout-meldungen').empty();
+                $('#layout-meldungen').append("<div class=\"alert alert-success\">Die Jahresübersicht wurde erfolgreich gesendet.</div>");
+            }
+        })
+        .fail(function (jqXHR, textStatus, err) {
+            $('#layout-meldungen').empty();
+            $('#layout-meldungen').append("<div class=\"alert alert-danger\">Beim Senden der Jahresübersicht ist ein Fehler aufgetreten. Bitte versuchen Sie es später nocheinmal.</div>");
+        });
+
 }
 
 /**

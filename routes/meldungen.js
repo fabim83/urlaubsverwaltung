@@ -4,6 +4,17 @@ const Meldung = require('../models/meldung');
 const User = require('../models/user');
 const MailUtil = require('../utils/mail');
 const VerificationUtil = require('../utils/verification');
+const fonts = {
+    Roboto: {
+        normal: './public/fonts/Roboto-Regular.ttf',
+        bold: './public/fonts/Roboto-Medium.ttf',
+        italics: './public/fonts/Roboto-Italic.ttf',
+        bolditalics: './public/fonts/Roboto-MediumItalic.ttf'
+    }
+};
+const PdfPrinter = require('pdfmake/src/printer');
+const printer = new PdfPrinter(fonts);
+const fs = require('fs');
 
 /**
  * Routes Meldungen
@@ -119,7 +130,14 @@ router.post('/meldung-stornieren', VerificationUtil.isMitarbeiterAuthentifiziert
 });
 
 router.post('/jahresuebersicht', VerificationUtil.isMitarbeiterAuthentifiziert, function (req, res) {
-
+    Meldung.getMeldungenByPersonalnummerUndJahr(req.user[0].personalnummer, new Date().getFullYear(), (err, result) => {
+        if (err) {
+            req.flash('error_msg', err.message);
+            res.redirect('/');
+        } else {
+            erstelleUndSendeJahresuebersicht(req, res, result);
+        }
+    });
 });
 
 /**
@@ -251,6 +269,58 @@ function behandleKrankMeldungGenehmigt(req, res, status) {
             });
         }
     });
+};
+
+function erstelleUndSendeJahresuebersicht(req, res, meldungen) {
+    var datum = new Date();
+    var pfad = 'jahresuebersichten/Jahresübersicht_' + req.user[0].personalnummer + '_' + datum.getFullYear() + (datum.getMonth() + 1) + datum.getDate() + datum.getHours() + datum.getMinutes() + '.pdf';
+
+    var docDefinition = {
+        header: {
+            columns: [
+                { text: '\u00A9 ' + datum.getFullYear() + ' Urlaubsverwaltung', margin: [15, 15] },
+                { text: datum.getDate() + '.' + datum.getMonth() + '.' + datum.getFullYear(), alignment: 'right', margin: [15, 15] }
+            ]
+        },
+        footer: function(currentPage, pageCount) { return {text: 'Seite: ' + currentPage.toString(), alignment: 'right', margin: [15, 15]} },
+        content: [
+            {text: 'Jahresübersicht ' + datum.getFullYear(), style: 'header', fontSize: 24, marginBottom: 25, marginTop: 25},
+            {
+                layout: 'lightHorizontalLines',
+                table: {
+                    headerRows: 1,
+                    body: buildTableBody(meldungen, ['#', 'Meldungsart', 'Von', 'Bis', 'Halber Tag'])
+                }
+            }
+        ]
+    };
+
+    var pdfDoc = printer.createPdfKitDocument(docDefinition);
+    pdfDoc.pipe(fs.createWriteStream(pfad));
+    pdfDoc.end();
+    MailUtil.sendeJahresuebersicht(req, res, pfad);
+};
+
+function buildTableBody(meldungen, columns) {
+    var body = [];
+
+    body.push(columns);
+
+    var i = 1;
+    meldungen.forEach(function(meldung) {
+        var dataRow = [];
+
+        dataRow.push(i.toString());
+        dataRow.push(meldung.meldungsart.toString());
+        dataRow.push(meldung.vom_dat.toString());
+        dataRow.push(meldung.bis_dat.toString());
+        dataRow.push(meldung.halber_tag.toString())
+
+        body.push(dataRow);
+        i++;
+    });
+
+    return body;
 };
 
 function getAnzahlWerktage(startDate, endDate) {
