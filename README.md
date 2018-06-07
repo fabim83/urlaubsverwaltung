@@ -7,3 +7,4 @@
 5. Konsole öffnen und in das Projektverzeichnis wechseln
 6. Anwendung mit Befehl 'node app.js' starten, PORT wird auf der Konsole ausgeben
 7. In den Browser wechseln und Anwendung mit localhost:PORT aufrufen
+8. Admin-Kennung: Username -> PN00001 Passwort -> test
